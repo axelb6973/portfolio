@@ -1,0 +1,4 @@
+public/images/*.png
+public/images/gallery/*.jpg
+.vercel/
+.DS_Store

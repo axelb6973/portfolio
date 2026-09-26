@@ -1,309 +1,304 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en-AU">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AXAIR — Climatisation, pompes à chaleur & qualité d'air</title>
-<meta name="description" content="AXAIR conçoit, installe et entretient vos systèmes de climatisation et pompes à chaleur. Étude thermique, pose certifiée RGE, maintenance 7j/7.">
+<title>Air Conditioning Perth | ACDC Air Conditioning, Innaloo</title>
+<meta name="description" content="Fast and reliable heating and air conditioning service across the Perth Metropolitan Area. Split system installation, ducted air conditioning, repairs and maintenance. Over 20 years of experience.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="public/images/acdc-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HVACBusiness",
+  "name": "ACDC Air Conditioning",
+  "slogan": "Fast & reliable heating and air conditioning service in Perth Metropolitan area",
+  "email": "daniel@acdcair.com.au",
+  "telephone": ["+61894466146", "+61432230757"],
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Innaloo",
+    "addressRegion": "WA",
+    "addressCountry": "AU"
+  },
+  "geo": { "@type": "GeoCoordinates", "latitude": -31.962367, "longitude": 115.900795 },
+  "areaServed": { "@type": "City", "name": "Perth Metropolitan Area, Western Australia" },
+  "knowsAbout": ["Split system installation", "Ducted air conditioning", "Mechanical ventilation", "Preventative maintenance"]
+}
+</script>
 </head>
 <body>
 
+<a class="skip" href="#main">Skip to content</a>
 <div class="scroll-progress" aria-hidden="true"><span id="scrollBar"></span></div>
 <div class="cursor" id="cursor" aria-hidden="true"></div>
 
-<!-- Promo bar -->
-<div class="promo" id="promo">
-  <p>Jusqu'à <strong>5 200 €</strong> d'aides cumulées sur votre pompe à chaleur en 2026.
-    <a href="#devis" class="promo__link">Vérifier mon éligibilité <span class="chev">›</span></a></p>
-  <button class="promo__close" id="promoClose" aria-label="Fermer l'annonce">×</button>
+<div class="topbar">
+  <p>Perth Metropolitan Area &middot; based in Innaloo</p>
+  <p class="topbar__tels">
+    <a href="tel:+61894466146">9446 6146</a>
+    <span aria-hidden="true">/</span>
+    <a href="tel:+61432230757">0432 230 757</a>
+  </p>
 </div>
 
-<!-- Nav -->
 <header class="nav" id="nav">
   <div class="nav__inner">
-    <a class="wordmark" href="#top" data-magnetic>AXAIR</a>
+    <a class="brand" href="index.html" data-magnetic>
+      <img src="public/images/acdc-logo.png" alt="ACDC Air Conditioning" width="150" height="40"
+           onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'brand__fallback',textContent:'ACDC'}))">
+    </a>
 
-    <nav class="nav__links" id="navLinks" aria-label="Navigation principale">
-      <a href="#services" class="nav__link">Solutions</a>
-      <a href="#gammes" class="nav__link">Gammes</a>
-      <a href="#methode" class="nav__link">Méthode</a>
-      <a href="#avis" class="nav__link">Avis</a>
-      <a href="#contact" class="nav__link">Agence</a>
+    <nav class="nav__links" id="navLinks" aria-label="Main">
+      <a href="index.html" class="nav__link is-current">Home</a>
+      <a href="about.html" class="nav__link">About</a>
+      <a href="services.html" class="nav__link">Services</a>
+      <a href="gallery.html" class="nav__link">Gallery</a>
+      <a href="contact.html" class="nav__link">Contact</a>
       <span class="nav__ink" id="navInk" aria-hidden="true"></span>
     </nav>
 
     <div class="nav__utils">
-      <button class="iconbtn" aria-label="Rechercher">
-        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="M13.5 13.5 17.5 17.5"/></svg>
-      </button>
-      <a class="lang" href="#" data-magnetic>
-        <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M3 10h14M10 3c2.4 2 2.4 12 0 14M10 3c-2.4 2-2.4 12 0 14"/></svg>
-        France
+      <a class="nav__tel" href="tel:+61432230757">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h3l1.5 4-2 1.5a8 8 0 0 0 4 4L13 10.5 17 12v3a2 2 0 0 1-2 2A12 12 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>
+        0432 230 757
       </a>
-      <a class="btn btn--blue" href="#devis" data-magnetic>Devis gratuit</a>
-      <button class="burger" id="burger" aria-label="Menu"><span></span><span></span></button>
+      <a class="btn btn--blue" href="contact.html#quote" data-magnetic>Get a free quote</a>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
     </div>
   </div>
 </header>
 
-<!-- Hero -->
-<section class="hero" id="top">
+<main id="main">
+<section class="hero">
   <canvas class="hero__flow" id="flow" aria-hidden="true"></canvas>
   <div class="hero__halo" aria-hidden="true"></div>
 
   <div class="hero__content">
-    <p class="eyebrow" data-reveal>Climatisation · Pompes à chaleur · Ventilation</p>
-    <h1 class="display split" data-split>L'air juste, sans bruit.</h1>
+    <p class="eyebrow" data-reveal>Perth Metropolitan Area &middot; Innaloo</p>
+    <h1 class="display split" data-split>Fast &amp; reliable heating and air conditioning service in Perth Metropolitan area</h1>
     <p class="hero__sub" data-reveal data-delay="240">
-      Étude thermique pièce par pièce, matériel Daikin &amp; Mitsubishi, pose certifiée RGE
-      et maintenance à distance. 18 °C ou 26 °C : la même exigence.
+      With over 20 years of experience, we&rsquo;re the right choice to take care of your air conditioning requirements.
     </p>
     <div class="hero__cta" data-reveal data-delay="380">
-      <a class="btn btn--ghost-light" href="#services" data-magnetic>Voir les solutions <span class="chev">›</span></a>
-      <a class="btn btn--blue" href="#devis" data-magnetic>Être rappelé en 2 h</a>
+      <a class="btn btn--blue" href="tel:+61432230757" data-magnetic>Call 0432 230 757</a>
+      <a class="btn btn--ghost-light" href="contact.html#quote" data-magnetic>Get a free quote <span class="chev">&rsaquo;</span></a>
     </div>
 
     <div class="hero__unit" data-parallax="-0.08" aria-hidden="true">
       <svg viewBox="0 0 520 190" class="unit">
         <rect class="unit__body" x="20" y="20" width="480" height="120" rx="8"/>
         <path class="unit__lip" d="M20 132 H500 L470 168 H50 Z"/>
-        <g class="unit__vents">
-          <path d="M60 150 H455"/><path d="M66 158 H448"/>
-        </g>
+        <g class="unit__vents"><path d="M60 150 H455"/><path d="M66 158 H448"/></g>
         <g class="unit__led"><circle cx="452" cy="52" r="4"/></g>
         <g class="unit__edge"><path d="M20 28 H500"/></g>
       </svg>
-      <div class="unit__air">
-        <span></span><span></span><span></span><span></span><span></span>
-      </div>
+      <div class="unit__air"><span></span><span></span><span></span><span></span><span></span></div>
     </div>
   </div>
 
-  <a class="scrollcue" href="#services" aria-label="Défiler"><span></span></a>
+  <a class="scrollcue" href="#promise" aria-label="Scroll down"><span></span></a>
 </section>
 
-<!-- Marquee -->
 <div class="marquee" aria-hidden="true">
-  <div class="marquee__track">
-    <span>RGE QualiPAC</span><i>·</i><span>Attestation de capacité F-Gaz</span><i>·</i>
-    <span>Garantie pièces 5 ans</span><i>·</i><span>Intervention sous 4 h</span><i>·</i>
-    <span>1 480 installations</span><i>·</i>
-    <span>RGE QualiPAC</span><i>·</i><span>Attestation de capacité F-Gaz</span><i>·</i>
-    <span>Garantie pièces 5 ans</span><i>·</i><span>Intervention sous 4 h</span><i>·</i>
-    <span>1 480 installations</span><i>·</i>
-  </div>
+  <div class="marquee__track"><span>Actron Air</span><i aria-hidden="true">&middot;</i><span>Daikin</span><i aria-hidden="true">&middot;</i><span>Fujitsu</span><i aria-hidden="true">&middot;</i><span>LG</span><i aria-hidden="true">&middot;</i><span>Mitsubishi</span><i aria-hidden="true">&middot;</i><span>Samsung</span><i aria-hidden="true">&middot;</i><span>Hitachi</span><i aria-hidden="true">&middot;</i><span>Toshiba</span><i aria-hidden="true">&middot;</i><span>Panasonic</span><i aria-hidden="true">&middot;</i><span>Actron Air</span><i aria-hidden="true">&middot;</i><span>Daikin</span><i aria-hidden="true">&middot;</i><span>Fujitsu</span><i aria-hidden="true">&middot;</i><span>LG</span><i aria-hidden="true">&middot;</i><span>Mitsubishi</span><i aria-hidden="true">&middot;</i><span>Samsung</span><i aria-hidden="true">&middot;</i><span>Hitachi</span><i aria-hidden="true">&middot;</i><span>Toshiba</span><i aria-hidden="true">&middot;</i><span>Panasonic</span><i aria-hidden="true">&middot;</i></div>
 </div>
 
-<!-- Services -->
-<section class="section" id="services">
+<section class="section" id="promise">
   <div class="lane">
     <header class="sechead">
-      <p class="eyebrow eyebrow--dark" data-reveal>Solutions</p>
-      <h2 class="heading split" data-split>Quatre réponses, une seule exigence.</h2>
+      <p class="eyebrow eyebrow--dark" data-reveal>Why ACDC</p>
+      <h2 class="heading split" data-split>A complete solution; from consult to design to installation.</h2>
     </header>
 
-    <div class="grid grid--4">
-      <article class="card" data-reveal data-tilt>
-        <p class="card__cat">Résidentiel</p>
-        <h3 class="card__name">Mono-split</h3>
-        <p class="card__desc">Une pièce, une unité. Silence à 19 dB(A), pilotage par application, installation en une journée.</p>
-        <div class="card__art">
-          <svg viewBox="0 0 200 120" aria-hidden="true"><rect x="30" y="34" width="140" height="42" rx="6"/><path d="M30 70 H170"/><path d="M60 92 q40 16 80 0" class="dash"/></svg>
-        </div>
-        <span class="card__go">Configurer <span class="chev">›</span></span>
+    <div class="grid grid--3">
+      <article class="pillar" data-reveal data-tilt>
+        <span class="pillar__mark" aria-hidden="true"></span>
+        <h3>Fast Reliable Service</h3>
+        <p>When the system stops, the call gets answered and the job gets booked.</p>
       </article>
+      <article class="pillar" data-reveal data-delay="90" data-tilt>
+        <span class="pillar__mark pillar__mark--warm" aria-hidden="true"></span>
+        <h3>Service and Installation</h3>
+        <p>Highly trained and experts in HVAC service and replacements.</p>
+      </article>
+      <article class="pillar" data-reveal data-delay="180" data-tilt>
+        <span class="pillar__mark" aria-hidden="true"></span>
+        <h3>Honest and Fair</h3>
+        <p>Thorough, informative, and knowledgeable.</p>
+      </article>
+    </div>
 
-      <article class="card" data-reveal data-delay="90" data-tilt>
-        <p class="card__cat">Multi-pièces</p>
-        <h3 class="card__name">Multi-split</h3>
-        <p class="card__desc">Jusqu'à 5 unités intérieures sur un seul groupe extérieur. Zones indépendantes, une seule liaison.</p>
-        <div class="card__art">
-          <svg viewBox="0 0 200 120" aria-hidden="true"><rect x="18" y="28" width="66" height="26" rx="5"/><rect x="18" y="70" width="66" height="26" rx="5"/><rect x="118" y="46" width="64" height="40" rx="6"/><path d="M84 41 H118M84 83 H118" class="dash"/></svg>
-        </div>
-        <span class="card__go">Configurer <span class="chev">›</span></span>
-      </article>
-
-      <article class="card" data-reveal data-delay="180" data-tilt>
-        <p class="card__cat">Chauffage</p>
-        <h3 class="card__name">PAC air/eau</h3>
-        <p class="card__desc">COP 4,6 à 7 °C extérieur. Remplace la chaudière fioul ou gaz sans toucher aux radiateurs.</p>
-        <div class="card__art">
-          <svg viewBox="0 0 200 120" aria-hidden="true"><rect x="40" y="30" width="120" height="60" rx="6"/><circle cx="100" cy="60" r="22"/><path d="M100 38 v44M78 60 h44" class="dash"/></svg>
-        </div>
-        <span class="card__go">Configurer <span class="chev">›</span></span>
-      </article>
-
-      <article class="card" data-reveal data-delay="270" data-tilt>
-        <p class="card__cat">Tertiaire</p>
-        <h3 class="card__name">Gainable &amp; VRV</h3>
-        <p class="card__desc">Diffusion invisible en faux plafond, régulation par local, GTB compatible. Bureaux, commerces, cliniques.</p>
-        <div class="card__art">
-          <svg viewBox="0 0 200 120" aria-hidden="true"><path d="M20 40 H180 M20 40 v40 H180 v-40"/><path d="M60 80 v18M100 80 v18M140 80 v18" class="dash"/></svg>
-        </div>
-        <span class="card__go">Configurer <span class="chev">›</span></span>
-      </article>
+    <div class="counterline" data-reveal>
+      <b class="counter" data-to="20" data-suffix="+">0</b>
+      <span>years of experience across Perth</span>
     </div>
   </div>
 </section>
 
-<!-- Carousel -->
-<section class="carousel" id="gammes" aria-label="Gammes">
-  <div class="carousel__viewport" id="carViewport">
-    <article class="slide is-active" data-scene="alpine">
-      <div class="slide__bg" data-parallax="0.12"></div>
-      <div class="slide__copy">
-        <p class="eyebrow">Gamme Perfera</p>
-        <h2 class="heading">−15 °C dehors. 21 °C chez vous.</h2>
-        <p>Chauffage garanti jusqu'à −20 °C, dégivrage intelligent, consommation lissée sur la nuit.</p>
-        <div class="slide__cta">
-          <a class="btn btn--ghost-light" href="#devis">En savoir plus <span class="chev">›</span></a>
-          <a class="btn btn--blue" href="#devis">Réserver une étude</a>
-        </div>
-      </div>
-    </article>
-
-    <article class="slide" data-scene="summer">
-      <div class="slide__bg" data-parallax="0.12"></div>
-      <div class="slide__copy">
-        <p class="eyebrow">Gamme Stylish</p>
-        <h2 class="heading">Le rafraîchissement qu'on n'entend pas.</h2>
-        <p>19 dB(A) en vitesse nuit, capteur de présence à double zone, filtration des particules fines.</p>
-        <div class="slide__cta">
-          <a class="btn btn--ghost-light" href="#devis">Découvrir <span class="chev">›</span></a>
-          <a class="btn btn--blue" href="#devis">Réserver une étude</a>
-        </div>
-      </div>
-    </article>
-
-    <article class="slide" data-scene="night">
-      <div class="slide__bg" data-parallax="0.12"></div>
-      <div class="slide__copy">
-        <p class="eyebrow">Maintenance AXAIR</p>
-        <h2 class="heading">Surveillé pendant que vous dormez.</h2>
-        <p>Télérelevé des pressions et des consommations. Une dérive détectée, un technicien planifié.</p>
-        <div class="slide__cta">
-          <a class="btn btn--ghost-light" href="#methode">Le protocole <span class="chev">›</span></a>
-          <a class="btn btn--blue" href="#devis">Souscrire</a>
-        </div>
-      </div>
-    </article>
-  </div>
-
-  <button class="carousel__nav carousel__nav--prev" id="carPrev" aria-label="Précédent">‹</button>
-  <button class="carousel__nav carousel__nav--next" id="carNext" aria-label="Suivant">›</button>
-  <div class="carousel__dots" id="carDots" role="tablist" aria-label="Gammes"></div>
-</section>
-
-<!-- Méthode -->
-<section class="section section--fog" id="methode">
+<section class="section section--fog">
   <div class="lane">
     <header class="sechead">
-      <p class="eyebrow eyebrow--dark" data-reveal>Méthode</p>
-      <h2 class="heading split" data-split>Cinq étapes, aucune approximation.</h2>
-    </header>
-
-    <ol class="steps" id="steps">
-      <li class="step" data-reveal><span class="step__no">01</span><h3>Relevé sur site</h3><p>Volumes, orientation, isolation, menuiseries. Bilan thermique chiffré, pas d'estimation au m².</p></li>
-      <li class="step" data-reveal data-delay="80"><span class="step__no">02</span><h3>Dimensionnement</h3><p>Puissance calculée à ±0,5 kW. Un appareil surdimensionné cycle, s'use et coûte plus cher.</p></li>
-      <li class="step" data-reveal data-delay="160"><span class="step__no">03</span><h3>Devis &amp; aides</h3><p>Prix fermes, montage MaPrimeRénov' et CEE inclus. Reste à charge connu avant signature.</p></li>
-      <li class="step" data-reveal data-delay="240"><span class="step__no">04</span><h3>Pose certifiée</h3><p>Mise sous azote, tirage au vide sous 500 µm, contrôle d'étanchéité tracé et remis.</p></li>
-      <li class="step" data-reveal data-delay="320"><span class="step__no">05</span><h3>Suivi</h3><p>Réglages à 30 jours, entretien annuel, pièces garanties 5 ans, astreinte 7 j/7.</p></li>
-      <span class="steps__line" id="stepsLine" aria-hidden="true"></span>
-    </ol>
-  </div>
-</section>
-
-<!-- Stats -->
-<section class="stats">
-  <div class="lane grid grid--4">
-    <div class="stat" data-reveal><b class="counter" data-to="1480">0</b><span>installations livrées</span></div>
-    <div class="stat" data-reveal data-delay="90"><b class="counter" data-to="4" data-dec="1">0</b><span>heures d'intervention</span></div>
-    <div class="stat" data-reveal data-delay="180"><b class="counter" data-to="19">0</b><span>dB(A) en mode nuit</span></div>
-    <div class="stat" data-reveal data-delay="270"><b class="counter" data-to="98" data-suffix="%">0</b><span>clients recommandent</span></div>
-  </div>
-</section>
-
-<!-- Avis -->
-<section class="section" id="avis">
-  <div class="lane">
-    <header class="sechead">
-      <p class="eyebrow eyebrow--dark" data-reveal>Avis vérifiés</p>
-      <h2 class="heading split" data-split>Ce que disent les 1 480.</h2>
+      <p class="eyebrow eyebrow--dark" data-reveal>What we do</p>
+      <h2 class="heading split" data-split>Six ways we keep Perth comfortable.</h2>
     </header>
     <div class="grid grid--3">
-      <blockquote class="quote" data-reveal data-tilt>
-        <p>« Bilan thermique sérieux, chantier propre, zéro poussière. La facture de chauffage a baissé de 41 % sur l'hiver. »</p>
-        <footer><b>Claire M.</b><span>Maison 1974 · Lyon 5<sup>e</sup></span></footer>
-      </blockquote>
-      <blockquote class="quote" data-reveal data-delay="90" data-tilt>
-        <p>« Trois unités posées en une journée dans un cabinet en activité. Les patients n'ont rien entendu. »</p>
-        <footer><b>Dr. Renaud P.</b><span>Cabinet dentaire · Villeurbanne</span></footer>
-      </blockquote>
-      <blockquote class="quote" data-reveal data-delay="180" data-tilt>
-        <p>« Panne un dimanche d'août : technicien sur place à 11 h. Condensateur remplacé, aucune facture. »</p>
-        <footer><b>Samir B.</b><span>Restaurant · Bron</span></footer>
-      </blockquote>
+      <article class="card" data-reveal data-delay="0" data-tilt>
+        <h3 class="card__name">Domestic</h3>
+        <p class="card__desc">Homes across the Perth metro area, from a single bedroom split to a whole-house ducted system.</p>
+        <div class="card__art"><svg viewBox="0 0 200 120" aria-hidden="true"><rect x="34" y="52" width="132" height="54" rx="6"/><path d="M100 14 32 52h136z"/><path d="M62 106v-24h30v24" class="dash"/></svg></div>
+        <a class="card__go" href="services.html">Get a quote <span class="chev">&rsaquo;</span></a>
+      </article>
+      <article class="card" data-reveal data-delay="80" data-tilt>
+        <h3 class="card__name">Commercial</h3>
+        <p class="card__desc">Offices, shops and industrial sites. Systems sized for the load, not for the catalogue.</p>
+        <div class="card__art"><svg viewBox="0 0 200 120" aria-hidden="true"><rect x="28" y="28" width="60" height="78" rx="4"/><rect x="104" y="52" width="68" height="54" rx="4"/><path d="M44 46h28M44 66h28M44 86h28M120 70h36M120 88h36" class="dash"/></svg></div>
+        <a class="card__go" href="services.html">Get a quote <span class="chev">&rsaquo;</span></a>
+      </article>
+      <article class="card" data-reveal data-delay="160" data-tilt>
+        <h3 class="card__name">Installation</h3>
+        <p class="card__desc">Supply and install of refrigerated units, split systems and ducted air conditioning.</p>
+        <div class="card__art"><svg viewBox="0 0 200 120" aria-hidden="true"><rect x="30" y="34" width="92" height="34" rx="5"/><path d="M138 51h34M156 35v32" class="dash"/><path d="M50 82q26 18 52 0" class="dash"/></svg></div>
+        <a class="card__go" href="services.html">Get a quote <span class="chev">&rsaquo;</span></a>
+      </article>
+      <article class="card" data-reveal data-delay="0" data-tilt>
+        <h3 class="card__name">Heating</h3>
+        <p class="card__desc">Reverse-cycle heating that keeps the place comfortable through a Perth winter.</p>
+        <div class="card__art"><svg viewBox="0 0 200 120" aria-hidden="true"><path d="M100 22c16 20 4 30 0 40-6 14 8 24 8 24" class="dash"/><path d="M78 40c12 16 3 24 0 32-5 11 6 19 6 19" class="dash"/><path d="M122 40c12 16 3 24 0 32-5 11 6 19 6 19" class="dash"/><rect x="44" y="92" width="112" height="16" rx="8"/></svg></div>
+        <a class="card__go" href="services.html">Get a quote <span class="chev">&rsaquo;</span></a>
+      </article>
+      <article class="card" data-reveal data-delay="80" data-tilt>
+        <h3 class="card__name">Cooling</h3>
+        <p class="card__desc">Refrigerated cooling, correctly sized and correctly commissioned so it holds temperature.</p>
+        <div class="card__art"><svg viewBox="0 0 200 120" aria-hidden="true"><circle cx="100" cy="64" r="30"/><path d="M100 24v80M60 64h80M74 38l52 52M126 38l-52 52" class="dash"/></svg></div>
+        <a class="card__go" href="services.html">Get a quote <span class="chev">&rsaquo;</span></a>
+      </article>
+      <article class="card" data-reveal data-delay="160" data-tilt>
+        <h3 class="card__name">Design</h3>
+        <p class="card__desc">A complete solution; from consult to design to installation.</p>
+        <div class="card__art"><svg viewBox="0 0 200 120" aria-hidden="true"><path d="M32 100 100 28l68 72"/><path d="M60 100v-30h30v30" class="dash"/><circle cx="100" cy="28" r="4"/></svg></div>
+        <a class="card__go" href="services.html">Get a quote <span class="chev">&rsaquo;</span></a>
+      </article>
     </div>
   </div>
 </section>
 
-<!-- Devis -->
-<section class="devis" id="devis">
-  <div class="lane devis__inner">
-    <div class="devis__copy">
-      <p class="eyebrow" data-reveal>Devis</p>
-      <h2 class="heading split" data-split>Dites-nous la pièce. On vous dit la puissance.</h2>
-      <p data-reveal data-delay="200">Réponse chiffrée sous deux heures ouvrées. Pas de rappel automatisé, pas de sous-traitance.</p>
-      <ul class="devis__list" data-reveal data-delay="300">
-        <li>Déplacement et étude offerts</li>
-        <li>Prix ferme, valable 60 jours</li>
-        <li>Aides déduites directement</li>
-      </ul>
+<section class="section">
+  <div class="lane">
+    <header class="sechead">
+      <p class="eyebrow eyebrow--dark" data-reveal>Reviews</p>
+      <h2 class="heading split" data-split>What our customers say.</h2>
+    </header>
+    <div class="grid grid--3">
+      <blockquote class="quote quote--empty" data-reveal data-tilt><p class="todo">[Google review to be added]</p></blockquote>
+      <blockquote class="quote quote--empty" data-reveal data-delay="90" data-tilt><p class="todo">[Google review to be added]</p></blockquote>
+      <blockquote class="quote quote--empty" data-reveal data-delay="180" data-tilt><p class="todo">[Google review to be added]</p></blockquote>
     </div>
+    <p class="centered" data-reveal data-delay="240">
+      <a class="btn btn--ghost-dark" href="[Google reviews URL to be supplied]" data-magnetic>See our Google reviews <span class="chev">&rsaquo;</span></a>
+    </p>
+  </div>
+</section>
 
-    <form class="form" id="form" novalidate>
-      <div class="field"><label for="f-nom">Nom</label><input id="f-nom" name="nom" required placeholder="Nom et prénom"></div>
-      <div class="field"><label for="f-tel">Téléphone</label><input id="f-tel" name="tel" inputmode="tel" required placeholder="06 00 00 00 00"></div>
-      <div class="field"><label for="f-cp">Code postal</label><input id="f-cp" name="cp" inputmode="numeric" required placeholder="69000"></div>
-      <div class="field"><label for="f-surf">Surface à traiter</label><input id="f-surf" name="surface" inputmode="numeric" placeholder="m²"></div>
-      <div class="field field--full"><label for="f-msg">Votre besoin</label><textarea id="f-msg" name="message" rows="3" placeholder="Remplacement, création, entretien…"></textarea></div>
+<section class="cta" id="quote-band">
+  <div class="lane cta__inner">
+    <div class="cta__copy">
+      <p class="eyebrow" data-reveal>Free quote</p>
+      <h2 class="heading split" data-split>Tell us about the space. We&rsquo;ll size the system.</h2>
+      <p data-reveal data-delay="200">
+        Installations, repairs, services and maintenance for residential, commercial and industrial
+        clients throughout Perth. Call <a href="tel:+61432230757">0432 230 757</a> or send the form.
+      </p>
+    </div>
+    <form class="form" data-form id="quote" action="[Formspree endpoint to be supplied]" method="post" novalidate>
+      <div class="field">
+        <label for="q-name">Name</label>
+        <input id="q-name" name="name" required autocomplete="name" placeholder="Full name">
+      </div>
+      <div class="field">
+        <label for="q-email">Email</label>
+        <input id="q-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="q-phone">Phone</label>
+        <input id="q-phone" name="phone" type="tel" required autocomplete="tel" placeholder="0400 000 000">
+      </div>
+      <div class="field">
+        <label for="q-address">Address</label>
+        <input id="q-address" name="address" autocomplete="street-address" placeholder="Street, suburb">
+      </div>
+      <div class="field field--full">
+        <label for="q-service">Service needed</label>
+        <select id="q-service" name="service" required>
+          <option value="">Choose a service</option>
+          <option>Installation</option>
+          <option>Repair</option>
+          <option>Maintenance</option>
+          <option>Ventilation</option>
+          <option>Commercial</option>
+        </select>
+      </div>
+      <div class="field field--full">
+        <label for="q-message">Message</label>
+        <textarea id="q-message" name="message" rows="4" placeholder="Rooms to cover, current system, anything we should know"></textarea>
+      </div>
       <div class="field--full form__foot">
-        <button class="btn btn--blue" type="submit" data-magnetic>Envoyer la demande</button>
-        <p class="form__note" id="formNote" role="status"></p>
+        <button class="btn btn--blue" type="submit" data-magnetic>Send enquiry</button>
+        <p class="form__note" data-note role="status"></p>
       </div>
     </form>
   </div>
 </section>
+</main>
 
-<!-- Footer -->
-<footer class="footer" id="contact">
+<footer class="footer">
   <div class="lane footer__grid">
     <div class="footer__brand">
-      <p class="wordmark wordmark--light">AXAIR</p>
-      <p>14 rue des Frigoristes<br>69003 Lyon</p>
-      <p><a href="tel:+33400000000">04 00 00 00 00</a><br><a href="mailto:contact@axair.fr">contact@axair.fr</a></p>
+      <p class="brand__fallback brand__fallback--light">ACDC</p>
+      <p>Fast &amp; reliable heating and air conditioning service in Perth Metropolitan area.</p>
+      <p>
+        <a href="tel:+61894466146">9446 6146</a> &middot;
+        <a href="tel:+61432230757">0432 230 757</a><br>
+        <a href="mailto:daniel@acdcair.com.au">daniel@acdcair.com.au</a>
+      </p>
     </div>
-    <div><h4>Solutions</h4><a href="#services">Mono-split</a><a href="#services">Multi-split</a><a href="#services">PAC air/eau</a><a href="#services">Gainable</a></div>
-    <div><h4>Services</h4><a href="#methode">Bilan thermique</a><a href="#methode">Installation</a><a href="#methode">Entretien annuel</a><a href="#devis">Dépannage</a></div>
-    <div><h4>Agence</h4><a href="#avis">Avis clients</a><a href="#methode">Certifications</a><a href="#contact">Recrutement</a><a href="#devis">Contact</a></div>
-    <div><h4>Légal</h4><a href="#">Mentions légales</a><a href="#">Confidentialité</a><a href="#">CGV</a><a href="#">Cookies</a></div>
+    <div>
+      <h2>Services</h2>
+      <a href="services.html#air-conditioning">Air conditioning</a>
+      <a href="services.html#ventilation">Mechanical ventilation</a>
+      <a href="services.html#maintenance">Maintenance</a>
+      <a href="services.html#systems">System types</a>
+    </div>
+    <div>
+      <h2>Company</h2>
+      <a href="about.html">About ACDC</a>
+      <a href="gallery.html">Our work</a>
+      <a href="contact.html">Contact</a>
+      <a href="contact.html#quote">Free quote</a>
+    </div>
+    <div>
+      <h2>Details</h2>
+      <p class="todo">Trading hours [to be supplied]</p>
+      <p class="todo">AU / ARC licence [to be supplied]</p>
+      <p class="todo">ABN [to be supplied]</p>
+      <p class="todo">Social links [to be supplied]</p>
+    </div>
   </div>
-  <div class="lane footer__base"><p>© 2026 AXAIR Climatisation — RGE QualiPAC · Attestation F-Gaz n° FR-00000</p></div>
+  <div class="lane footer__base">
+    <p>&copy; 2026 ACDC Air Conditioning &middot; Perth Metropolitan Area, Western Australia</p>
+    <p class="demo-note">Demonstration mock-up &ndash; proposed redesign. Not an official ACDC website.</p>
+  </div>
 </footer>
 
-<!-- Floating -->
-<div class="fabs">
-  <a class="fab" href="tel:+33400000000" aria-label="Appeler">
-    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h3l1.5 4-2 1.5a8 8 0 0 0 4 4L13 10.5 17 12v3a2 2 0 0 1-2 2A12 12 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>
-  </a>
-  <a class="fab fab--blue" href="#devis" aria-label="Discuter">
-    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14v9H8l-5 3z"/></svg>
-  </a>
-</div>
+<a class="callbar" href="tel:+61432230757">
+  <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3h3l1.5 4-2 1.5a8 8 0 0 0 4 4L13 10.5 17 12v3a2 2 0 0 1-2 2A12 12 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>
+  Call now &middot; 0432 230 757
+</a>
 
 <script src="assets/js/main.js" defer></script>
 </body>
