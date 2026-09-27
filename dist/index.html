@@ -21,7 +21,14 @@
   "email": "daniel@acdcair.com.au",
   "telephone": ["+61894466146", "+61432230757"],
   "areaServed": { "@type": "City", "name": "Perth Metropolitan Area, Western Australia" },
-  "address": { "@type": "PostalAddress", "addressRegion": "WA", "addressCountry": "AU" },
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "57A Boronia St",
+    "addressLocality": "Innaloo",
+    "addressRegion": "WA",
+    "postalCode": "6018",
+    "addressCountry": "AU"
+  },
   "knowsAbout": ["Split system installation", "Ducted air conditioning",
                  "Refrigerated air conditioning", "Mechanical ventilation",
                  "Preventative maintenance"],
@@ -35,6 +42,11 @@
 <a class="skip" href="#main">Skip to content</a>
 <div class="scroll-progress" aria-hidden="true"><span id="scrollBar"></span></div>
 <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<p class="bg-signal-blue px-6 py-2 text-center text-[12px] font-semibold text-white">
+  Demonstration mock-up &mdash; proposed redesign.
+  <span class="font-normal">Not the official ACDC Air Conditioning website.</span>
+</p>
 
 <div class="bg-carbon text-fog text-[12px] tracking-wider">
   <div class="lane flex flex-wrap items-center justify-between gap-4 py-2">
@@ -227,24 +239,40 @@
     <header class="sechead">
       <p class="eyebrow" data-reveal>Reviews</p>
       <h2 class="heading split" data-split>What our customers say.</h2>
+      <p class="text-[14px] text-slate" data-reveal data-delay="160">
+        Published reviews, quoted as written.
+        <span class="todo">[to be replaced by the live Google reviews widget]</span>
+      </p>
     </header>
     <div class="grid gap-12 md:grid-cols-3">
-      <blockquote class="grid min-h-40 place-content-center rounded bg-fog p-6 text-center"
+      <blockquote class="grid content-start gap-6 rounded bg-fog p-6"
                   data-reveal data-delay="0" data-tilt>
-        <p class="todo">[Google review to be added]</p>
+        <p class="text-[20px] font-light leading-[1.43] tracking-[-0.02em] text-iron">&ldquo;Dan is a very experienced technician who goes above and beyond. He&rsquo;s very knowledgeable and makes you feel comfortable with his advice.&rdquo;</p>
+        <footer class="grid gap-0.5 text-[14px]">
+          <b class="font-semibold text-iron">yulisese d</b>
+          <span class="text-[12px] text-ash">5/5 &middot; Google &middot; 11 months ago</span>
+        </footer>
       </blockquote>
-      <blockquote class="grid min-h-40 place-content-center rounded bg-fog p-6 text-center"
+      <blockquote class="grid content-start gap-6 rounded bg-fog p-6"
                   data-reveal data-delay="90" data-tilt>
-        <p class="todo">[Google review to be added]</p>
+        <p class="text-[20px] font-light leading-[1.43] tracking-[-0.02em] text-iron">&ldquo;Arrived on time and did a great job. Will definitely use again.&rdquo;</p>
+        <footer class="grid gap-0.5 text-[14px]">
+          <b class="font-semibold text-iron">Review on ServiceSeeking</b>
+          <span class="text-[12px] text-ash">5/5 &middot; ServiceSeeking &middot; 6 years ago</span>
+        </footer>
       </blockquote>
-      <blockquote class="grid min-h-40 place-content-center rounded bg-fog p-6 text-center"
+      <blockquote class="grid content-start gap-6 rounded bg-fog p-6"
                   data-reveal data-delay="180" data-tilt>
-        <p class="todo">[Google review to be added]</p>
+        <p class="text-[20px] font-light leading-[1.43] tracking-[-0.02em] text-iron">&ldquo;Easily 5 stars. <span class="todo">[full text to be pulled from the Google listing]</span>&rdquo;</p>
+        <footer class="grid gap-0.5 text-[14px]">
+          <b class="font-semibold text-iron">Prabal Pokharel</b>
+          <span class="text-[12px] text-ash">5/5 &middot; Google &middot; 8 months ago</span>
+        </footer>
       </blockquote>
     </div>
     <p class="mt-12 text-center" data-reveal data-delay="240">
-      <a class="btn btn-ghost-dark" href="[Google reviews URL to be supplied]" data-magnetic>
-        See our Google reviews <span class="chev">&rsaquo;</span></a>
+      <a class="btn btn-ghost-dark" href="https://www.google.com/search?q=acdc+air+innaloo"
+         rel="noopener" data-magnetic>See our Google reviews <span class="chev">&rsaquo;</span></a>
     </p>
   </div>
 </section>
@@ -308,6 +336,7 @@
       <img src="img/acdc-logo.png" alt="ACDC Air Conditioning" width="313" height="147"
            class="h-10 w-auto object-contain">
       <p class="text-fog">Fast &amp; reliable heating and air conditioning service in Perth Metropolitan area.</p>
+      <p class="text-fog">57A Boronia St, Innaloo WA 6018</p>
       <p>
         <a href="tel:+61894466146" class="font-semibold hover:text-signal-blue">9446 6146</a> &middot;
         <a href="tel:+61432230757" class="font-semibold hover:text-signal-blue">0432 230 757</a><br>

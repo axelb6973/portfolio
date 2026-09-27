@@ -19,6 +19,8 @@ DIST = ROOT / "dist"
 TEL_LAND = ("+61894466146", "9446 6146")
 TEL_MOB = ("+61432230757", "0432 230 757")
 EMAIL = "daniel@acdcair.com.au"
+# Relevee sur la fiche Google / les annuaires. A faire confirmer par Daniel.
+ADDRESS = ("57A Boronia St", "Innaloo", "WA", "6018")
 TAGLINE = "Fast &amp; reliable heating and air conditioning service in Perth Metropolitan area"
 
 NAV = [
@@ -49,6 +51,18 @@ BRAND_WORDS = ["Daikin", "LG"]
 
 # Galerie : uniquement des photos ACDC authentiques. Le stock fourni
 # (technicien generique, toitures americaines, rendus 3D) est ecarte.
+# Avis publics releves sur la fiche Google et sur ServiceSeeking.
+# Textes repris mot pour mot, avec leur source : rien n'est reformule.
+REVIEWS = [
+    ("yulisese d", "Google", "5/5", "11 months ago",
+     "Dan is a very experienced technician who goes above and beyond. "
+     "He&rsquo;s very knowledgeable and makes you feel comfortable with his advice."),
+    ("Review on ServiceSeeking", "ServiceSeeking", "5/5", "6 years ago",
+     "Arrived on time and did a great job. Will definitely use again."),
+    ("Prabal Pokharel", "Google", "5/5", "8 months ago",
+     "Easily 5 stars. <span class=\"todo\">[full text to be pulled from the Google listing]</span>"),
+]
+
 GALLERY = [
     ("vrv-outdoor-units-rooftop-platform-perth",
      "Three VRV outdoor units installed on a rooftop plant platform, Perth",
@@ -107,7 +121,14 @@ def jsonld(page_name):
   "email": "{EMAIL}",
   "telephone": ["{TEL_LAND[0]}", "{TEL_MOB[0]}"],
   "areaServed": {{ "@type": "City", "name": "Perth Metropolitan Area, Western Australia" }},
-  "address": {{ "@type": "PostalAddress", "addressRegion": "WA", "addressCountry": "AU" }},
+  "address": {{
+    "@type": "PostalAddress",
+    "streetAddress": "{ADDRESS[0]}",
+    "addressLocality": "{ADDRESS[1]}",
+    "addressRegion": "{ADDRESS[2]}",
+    "postalCode": "{ADDRESS[3]}",
+    "addressCountry": "AU"
+  }},
   "knowsAbout": ["Split system installation", "Ducted air conditioning",
                  "Refrigerated air conditioning", "Mechanical ventilation",
                  "Preventative maintenance"],
@@ -143,6 +164,11 @@ def head(page, title, description):
 <a class="skip" href="#main">Skip to content</a>
 <div class="scroll-progress" aria-hidden="true"><span id="scrollBar"></span></div>
 <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<p class="bg-signal-blue px-6 py-2 text-center text-[12px] font-semibold text-white">
+  Demonstration mock-up &mdash; proposed redesign.
+  <span class="font-normal">Not the official ACDC Air Conditioning website.</span>
+</p>
 
 <div class="bg-carbon text-fog text-[12px] tracking-wider">
   <div class="lane flex flex-wrap items-center justify-between gap-4 py-2">
@@ -215,6 +241,7 @@ def footer():
       <img src="img/acdc-logo.png" alt="ACDC Air Conditioning" width="313" height="147"
            class="h-10 w-auto object-contain">
       <p class="text-fog">{TAGLINE}.</p>
+      <p class="text-fog">{ADDRESS[0]}, {ADDRESS[1]} {ADDRESS[2]} {ADDRESS[3]}</p>
       <p>
         <a href="tel:{TEL_LAND[0]}" class="font-semibold hover:text-signal-blue">{TEL_LAND[1]}</a> &middot;
         <a href="tel:{TEL_MOB[0]}" class="font-semibold hover:text-signal-blue">{TEL_MOB[1]}</a><br>
@@ -392,11 +419,15 @@ def page_home():
     )
 
     reviews = "\n".join(
-        f"""      <blockquote class="grid min-h-40 place-content-center rounded bg-fog p-6 text-center"
+        f"""      <blockquote class="grid content-start gap-6 rounded bg-fog p-6"
                   data-reveal data-delay="{i * 90}" data-tilt>
-        <p class="todo">[Google review to be added]</p>
+        <p class="text-[20px] font-light leading-[1.43] tracking-[-0.02em] text-iron">&ldquo;{text}&rdquo;</p>
+        <footer class="grid gap-0.5 text-[14px]">
+          <b class="font-semibold text-iron">{who}</b>
+          <span class="text-[12px] text-ash">{rating} &middot; {source} &middot; {when}</span>
+        </footer>
       </blockquote>"""
-        for i in range(3)
+        for i, (who, source, rating, when, text) in enumerate(REVIEWS)
     )
 
     return f"""<section class="hero">
@@ -482,13 +513,17 @@ def page_home():
     <header class="sechead">
       <p class="eyebrow" data-reveal>Reviews</p>
       <h2 class="heading split" data-split>What our customers say.</h2>
+      <p class="text-[14px] text-slate" data-reveal data-delay="160">
+        Published reviews, quoted as written.
+        <span class="todo">[to be replaced by the live Google reviews widget]</span>
+      </p>
     </header>
     <div class="grid gap-12 md:grid-cols-3">
 {reviews}
     </div>
     <p class="mt-12 text-center" data-reveal data-delay="240">
-      <a class="btn btn-ghost-dark" href="[Google reviews URL to be supplied]" data-magnetic>
-        See our Google reviews <span class="chev">&rsaquo;</span></a>
+      <a class="btn btn-ghost-dark" href="https://www.google.com/search?q=acdc+air+innaloo"
+         rel="noopener" data-magnetic>See our Google reviews <span class="chev">&rsaquo;</span></a>
     </p>
   </div>
 </section>
@@ -583,7 +618,7 @@ def page_about():
         will cost, what it will do, and what it will not do.
       </p>
       <p data-reveal data-delay="200">
-        <span class="todo">Exact address [to be confirmed]</span> &middot;
+        Based at {ADDRESS[0]}, {ADDRESS[1]} {ADDRESS[2]} {ADDRESS[3]}. &middot;
         <span class="todo">ARC / electrical licence [to be supplied]</span> &middot;
         <span class="todo">ABN [to be supplied]</span>
       </p>
@@ -756,7 +791,8 @@ def page_contact():
         ("Mobile", f'<a href="tel:{TEL_MOB[0]}" class="hover:text-signal-blue">{TEL_MOB[1]}</a>'),
         ("Email", f'<a href="mailto:{EMAIL}" class="hover:text-signal-blue">{EMAIL}</a>'),
         ("Service area", "Perth Metropolitan Area, Western Australia"),
-        ("Address", '<span class="todo">[to be confirmed]</span>'),
+        ("Address", f'{ADDRESS[0]}, {ADDRESS[1]} {ADDRESS[2]} {ADDRESS[3]}'
+                    '<br><span class="todo">[to be confirmed with Daniel]</span>'),
         ("Trading hours", '<span class="todo">[to be supplied]</span>'),
         ("Licence / ABN", '<span class="todo">[ARC licence and ABN to be supplied]</span>'),
     ]
@@ -777,8 +813,8 @@ def page_contact():
   <div class="lane grid items-start gap-16 lg:grid-cols-2">
     <dl class="grid gap-6">{dl}</dl>
     <div class="overflow-hidden rounded bg-fog" data-reveal data-delay="150">
-      <iframe title="ACDC Air Conditioning service area, Perth"
-              src="https://www.google.com/maps?q=Perth%2C%20Western%20Australia&amp;hl=en&amp;z=11&amp;output=embed"
+      <iframe title="ACDC Air Conditioning, 57A Boronia St, Innaloo WA"
+              src="https://www.google.com/maps?q=57A%20Boronia%20St%2C%20Innaloo%20WA%206018&amp;hl=en&amp;z=14&amp;output=embed"
               class="h-[420px] w-full border-0" loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
