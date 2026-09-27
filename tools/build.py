@@ -51,6 +51,14 @@ BRAND_WORDS = ["Daikin", "LG"]
 
 # Galerie : uniquement des photos ACDC authentiques. Le stock fourni
 # (technicien generique, toitures americaines, rendus 3D) est ecarte.
+# Notes publiques par plateforme. Volontairement non fusionnees en une seule
+# moyenne : les trois panels n'ont ni la meme taille ni le meme public.
+RATINGS = [
+    ("Google", "5.0", 5, "https://www.google.com/search?q=acdc+air+innaloo"),
+    ("ServiceSeeking", "4.9", 12, None),
+    ("Birdeye", "4.4", 8, None),
+]
+
 # Avis publics releves sur la fiche Google et sur ServiceSeeking.
 # Textes repris mot pour mot, avec leur source : rien n'est reformule.
 REVIEWS = [
@@ -106,6 +114,18 @@ SNOWFLAKE = ('<svg class="flake" viewBox="0 0 64 64" aria-hidden="true">'
              '<path d="M11.2 20l1.2-9.2M11.2 20l-9 2.4M52.8 44l-1.2 9.2M52.8 44l9-2.4"/>'
              '<path d="M11.2 44l-9-2.4M11.2 44l1.2 9.2M52.8 20l9 2.4M52.8 20l-1.2-9.2"/>'
              '</svg>')
+
+
+def stars(score):
+    """Cinq etoiles dont les pleines correspondent a la note arrondie."""
+    full = round(float(score))
+    out = ""
+    for i in range(5):
+        cls = "star" if i < full else "star star-off"
+        out += (f'<svg class="{cls}" viewBox="0 0 20 20" aria-hidden="true">'
+                f'<path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L1.6 7.7l5.8-.8z"/>'
+                f'</svg>')
+    return f'<span class="stars" role="img" aria-label="{score} out of 5">{out}</span>'
 
 
 def pending(label):
@@ -292,7 +312,11 @@ def footer():
         <p>{pending("ABN")}</p>
       </div>
       <div>
-        <h2 class="footer-head">Follow</h2>
+        <h2 class="footer-head">Legal</h2>
+        <nav class="footer-nav">
+          <a href="privacy.html">Privacy &amp; terms</a>
+        </nav>
+        <h2 class="footer-head mt-8">Follow</h2>
         <p>{pending("Facebook &amp; Instagram")}</p>
         <p><a href="https://www.google.com/search?q=acdc+air+innaloo" rel="noopener"
               class="footer-link-inline">Google reviews <span class="chev">&rsaquo;</span></a></p>
@@ -437,7 +461,7 @@ SERVICE_TILES = [
 
 def page_home():
     tiles = "\n".join(
-        f"""      <article class="card" data-reveal data-delay="{(i % 3) * 80}" data-tilt>
+        f"""      <article class="card card-outlined" data-reveal data-delay="{(i % 3) * 80}" data-tilt>
         <p class="card-cat">{cat}</p>
         <h3 class="card-name">{name}</h3>
         <p class="card-desc">{desc}</p>
@@ -465,15 +489,24 @@ def page_home():
     )
 
     reviews = "\n".join(
-        f"""      <blockquote class="grid content-start gap-6 rounded bg-fog p-6"
-                  data-reveal data-delay="{i * 90}" data-tilt>
-        <p class="text-[20px] font-light leading-[1.43] tracking-[-0.02em] text-iron">&ldquo;{text}&rdquo;</p>
-        <footer class="grid gap-0.5 text-[14px]">
-          <b class="font-semibold text-iron">{who}</b>
-          <span class="text-[12px] text-ash">{rating} &middot; {source} &middot; {when}</span>
+        f"""      <blockquote class="review" data-reveal data-delay="{i * 90}" data-tilt>
+        {stars(rating.split("/")[0])}
+        <p class="review-text">&ldquo;{text}&rdquo;</p>
+        <footer class="review-by">
+          <b>{who}</b>
+          <span>{source} &middot; {when}</span>
         </footer>
       </blockquote>"""
         for i, (who, source, rating, when, text) in enumerate(REVIEWS)
+    )
+
+    score_cards = "".join(
+        f"""<{'a href="' + url + '" rel="noopener"' if url else 'div'} class="score" data-reveal data-delay="{i * 80}">
+          <b class="score-value">{value}</b>
+          {stars(value)}
+          <span class="score-meta">{name} &middot; {count} reviews</span>
+        </{'a' if url else 'div'}>"""
+        for i, (name, value, count, url) in enumerate(RATINGS)
     )
 
     return f"""<section class="hero">
@@ -521,7 +554,7 @@ def page_home():
   </div>
 </section>
 
-<section class="section section-fog">
+<section class="section">
   <div class="lane">
     <header class="sechead">
       <p class="eyebrow" data-reveal>What we do</p>
@@ -554,22 +587,23 @@ def page_home():
   </div>
 </section>
 
-<section class="section">
+<section class="section section-fog" id="reviews">
   <div class="lane">
     <header class="sechead">
       <p class="eyebrow" data-reveal>Reviews</p>
-      <h2 class="heading split" data-split>What our customers say.</h2>
-      <p class="text-[14px] text-slate" data-reveal data-delay="160">
-        Published reviews, quoted as written.
-        {pending("Live Google reviews widget")}
-      </p>
+      <h2 class="heading split" data-split>Rated by the people we worked for.</h2>
     </header>
+
+    <div class="scores">{score_cards}</div>
+
     <div class="grid gap-12 md:grid-cols-3">
 {reviews}
     </div>
-    <p class="mt-12 text-center" data-reveal data-delay="240">
-      <a class="btn btn-ghost-dark" href="https://www.google.com/search?q=acdc+air+innaloo"
-         rel="noopener" data-magnetic>See our Google reviews <span class="chev">&rsaquo;</span></a>
+
+    <p class="mt-12 flex flex-wrap items-center justify-center gap-6 text-center" data-reveal data-delay="240">
+      <a class="btn btn-blue" href="https://www.google.com/search?q=acdc+air+innaloo"
+         rel="noopener" data-magnetic>Read all reviews on Google <span class="chev">&rsaquo;</span></a>
+      {pending("Live Google reviews widget")}
     </p>
   </div>
 </section>
@@ -830,6 +864,104 @@ def page_gallery():
 """
 
 
+def page_privacy():
+    return f"""<section class="pagehead">
+  <div class="lane">
+    <p class="eyebrow" data-reveal>Legal</p>
+    <h1 class="display split" data-split>Privacy &amp; terms.</h1>
+    <p class="mt-6 max-w-2xl text-fog" data-reveal data-delay="240">
+      This page is part of a demonstration mock-up. The wording below is a skeleton
+      for the real notice, not legal advice.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="lane grid max-w-3xl gap-10">
+    <div class="grid gap-4" data-reveal>
+      <h2 class="text-[24px] font-semibold tracking-[-0.02em] text-iron">Who we are</h2>
+      <p>ACDC Air Conditioning, {ADDRESS[0]}, {ADDRESS[1]} {ADDRESS[2]} {ADDRESS[3]},
+        serving the Perth Metropolitan Area.</p>
+      <p>{pending("Registered entity name and ABN")}</p>
+    </div>
+
+    <div class="grid gap-4" data-reveal data-delay="80">
+      <h2 class="text-[24px] font-semibold tracking-[-0.02em] text-iron">What the enquiry form collects</h2>
+      <p>Name, email, phone, suburb, the service you selected and your message. It is used
+        to answer your enquiry and to quote the work, and for nothing else.</p>
+      <p>On this mock-up the form is not connected to anything: nothing is transmitted and
+        nothing is stored. {pending("Form handler and retention period")}</p>
+    </div>
+
+    <div class="grid gap-4" data-reveal data-delay="160">
+      <h2 class="text-[24px] font-semibold tracking-[-0.02em] text-iron">Third parties</h2>
+      <p>The contact page embeds a Google Maps frame and the pages load Open Sans from
+        Google Fonts. Both are requests to Google servers and are subject to Google&rsquo;s
+        own privacy terms.</p>
+      <p>No analytics, no advertising pixel and no tracking cookie is set by this site.</p>
+    </div>
+
+    <div class="grid gap-4" data-reveal data-delay="240">
+      <h2 class="text-[24px] font-semibold tracking-[-0.02em] text-iron">Your rights</h2>
+      <p>You can ask what we hold about you, ask for it to be corrected, or ask for it to be
+        deleted. Write to <a href="mailto:{EMAIL}" class="font-semibold text-signal-blue">{EMAIL}</a>.</p>
+      <p>{pending("Complaints process and OAIC reference")}</p>
+    </div>
+
+    <div class="grid gap-4" data-reveal data-delay="320">
+      <h2 class="text-[24px] font-semibold tracking-[-0.02em] text-iron">Quotes and work</h2>
+      <p>{pending("Quote validity, deposit terms, warranty and cancellation")}</p>
+    </div>
+
+    <div class="grid gap-4" data-reveal data-delay="400">
+      <h2 class="text-[24px] font-semibold tracking-[-0.02em] text-iron">Photography</h2>
+      <p>The photographs on this site are of work carried out by ACDC. Manufacturer
+        trade marks belong to their respective owners and appear because the equipment
+        shown is theirs.</p>
+    </div>
+  </div>
+</section>
+"""
+
+
+def page_404():
+    return f"""<section class="pagehead" style="min-height:60svh;display:grid;align-content:center">
+  <div class="lane">
+    <p class="eyebrow" data-reveal>404</p>
+    <h1 class="display split" data-split>That page isn&rsquo;t here.</h1>
+    <p class="mt-6 max-w-xl text-fog" data-reveal data-delay="240">
+      The link may be old, or the page may have moved. The system still needs fixing,
+      so here is the quick way through.
+    </p>
+    <div class="mt-10 flex flex-wrap gap-4" data-reveal data-delay="340">
+      <a class="btn btn-blue" href="tel:{TEL_MOB[0]}" data-magnetic>Call {TEL_MOB[1]}</a>
+      <a class="btn btn-ghost-light" href="index.html" data-magnetic>Back to home <span class="chev">&rsaquo;</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="lane grid gap-12 md:grid-cols-3">
+    <a href="services.html" class="card card-outlined" data-tilt data-reveal>
+      <h2 class="card-name">Services</h2>
+      <p class="card-desc">Air conditioning, mechanical ventilation, maintenance.</p>
+      <span class="card-go">Go <span class="chev">&rsaquo;</span></span>
+    </a>
+    <a href="gallery.html" class="card card-outlined" data-tilt data-reveal data-delay="90">
+      <h2 class="card-name">Our work</h2>
+      <p class="card-desc">Jobs completed across the Perth metro area.</p>
+      <span class="card-go">Go <span class="chev">&rsaquo;</span></span>
+    </a>
+    <a href="contact.html#quote" class="card card-outlined" data-tilt data-reveal data-delay="180">
+      <h2 class="card-name">Free quote</h2>
+      <p class="card-desc">Tell us what the job is and we will come back to you.</p>
+      <span class="card-go">Go <span class="chev">&rsaquo;</span></span>
+    </a>
+  </div>
+</section>
+"""
+
+
 def page_contact():
     rows = [
         ("Phone", f'<a href="tel:{TEL_LAND[0]}" class="hover:text-signal-blue">{TEL_LAND[1]}</a>'),
@@ -955,6 +1087,16 @@ PAGES = [
      "Split system, ducted and VRV air conditioning installations completed by ACDC across Perth "
      "and its surrounding suburbs.",
      page_gallery),
+    ("privacy.html",
+     "Privacy &amp; Terms | ACDC Air Conditioning Perth",
+     "How ACDC Air Conditioning handles enquiry details, and the terms that apply to "
+     "quotes and work across the Perth Metropolitan Area.",
+     page_privacy),
+    ("404.html",
+     "Page not found | ACDC Air Conditioning Perth",
+     "That page is not here. Call ACDC Air Conditioning on 0432 230 757 or head back "
+     "to the home page.",
+     page_404),
     ("contact.html",
      "Contact ACDC Air Conditioning | Free Quote, Perth",
      "Call ACDC Air Conditioning on 0432 230 757 or request a free quote for air conditioning "
@@ -992,7 +1134,7 @@ def main():
     (DIST / "robots.txt").write_text(ROBOTS, encoding="utf-8")
 
     urls = "".join(f"  <url><loc>https://example.invalid/{f}</loc></url>\n"
-                   for f, *_ in PAGES)
+                   for f, *_ in PAGES if f != "404.html")
     (DIST / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         '<!-- Domaine a remplacer au deploiement. La demo est en noindex. -->\n'
