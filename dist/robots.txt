@@ -1,0 +1,3 @@
+# Maquette de demonstration : rien ne doit etre indexe.
+User-agent: *
+Disallow: /

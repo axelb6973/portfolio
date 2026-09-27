@@ -1,107 +1,138 @@
 # ACDC Air Conditioning — maquette de démonstration
 
 Proposition de refonte du site d'ACDC Air Conditioning (Perth, WA).
-**Maquette non officielle**, non indexable : chaque page porte
-`<meta name="robots" content="noindex, nofollow">` et un bandeau de mention en bas.
+**Maquette non officielle.** Chaque page porte `noindex, nofollow` en meta et en
+en-tête HTTP, et un bandeau de mention figure en bas de page.
 
-Site statique, sans dépendance et sans étape de build côté hébergeur :
-HTML + CSS + JS vanilla.
+Direction artistique : référence DJI — void noir en hero, canevas `#ededed`,
+cartes blanches à 4 px sans bordure ni ombre, un seul bleu fonctionnel `#0070d5`,
+boutons pilule 64 px, Open Sans 300–600, aucun dégradé sur les surfaces plates.
 
 ## Lancer
 
 ```bash
-python3 -m http.server 8000
-# http://localhost:8000
+npm install
+npm run dev        # build + serveur sur http://localhost:8000
 ```
 
-## Récupérer les images réelles
-
-Le logo et les 21 photos de la galerie viennent du site actuel. Ils ne sont pas
-dans le dépôt. Depuis une machine ayant accès à `acdcair.com.au` :
+## Build
 
 ```bash
-bash public/images/fetch-assets.sh
+npm run build      # images + pages + CSS
 ```
 
-Tant qu'une image manque, la tuile affiche son nom de fichier en orange plutôt
-qu'une image cassée, et le logo retombe sur le mot-clé texte « ACDC ».
+| Étape | Commande | Ce qu'elle fait |
+|---|---|---|
+| Images | `npm run images` | `photos/*.jpg|png` → `dist/img/*.webp` en 480/800/960/1440 selon la source |
+| Pages | `npm run pages` | assemble les 8 pages depuis `tools/build.py` |
+| CSS | `npm run css` | Tailwind CLI v4, purgé et minifié → `dist/assets/site.css` |
+
+Le dossier `dist/` est versionné : l'hébergeur n'a donc **aucune commande à exécuter**,
+et le build n'exige pas Python + Pillow sur la machine de déploiement.
+
+## Déploiement Vercel
+
+```bash
+npx vercel --prod
+```
+
+`vercel.json` sert `dist/`, force `X-Robots-Tag: noindex, nofollow` sur toutes les
+réponses et met `assets/` et `img/` en cache un an.
 
 ## Structure
 
 ```
-index.html  about.html  services.html  gallery.html  contact.html   # générés
-tools/build.py          # source unique du header, du footer et des pages
-assets/css/style.css    # tokens + composants
-assets/js/main.js       # interactions
-public/images/          # logo + galerie (à télécharger)
-vercel.json             # en-têtes, dont X-Robots-Tag: noindex
+photos/                 sources d'origine (JPG/PNG)
+src/css/tailwind.css    @theme (tokens DJI) + couche composants et animations
+src/js/main.js          interactions
+tools/images.py         conversion WebP + découpe du diptyque hero
+tools/build.py          source unique du header, du footer, du formulaire, des pages
+dist/                   sortie servie telle quelle
 ```
 
-Le header et le footer sont identiques sur les cinq pages. Pour éviter la dérive,
-ils vivent dans `tools/build.py` : modifie le script, puis régénère.
+Header, footer et formulaire vivent dans `tools/build.py`. Pour les modifier :
+éditer le script, puis `npm run build`.
 
-```bash
-python3 tools/build.py
-```
+## Photos
 
-Les `.html` générés sont commités, donc l'hébergeur n'a rien à exécuter.
+36 fichiers fournis, **29 uniques** après déduplication (5 doublons exacts détectés
+par md5, 2 quasi-doublons).
 
-## Déploiement Vercel
+**Utilisées : 13.** Ce sont les seules photos authentiquement ACDC — chantiers VRV,
+toitures, véhicules floqués, mise en service. La bannière hero d'origine était un
+diptyque ; `tools/images.py` la découpe en deux images pour éviter la couture
+verticale au milieu du hero.
 
-Projet statique, aucune commande de build :
+**Écartées : 6 fichiers de stock**, dont deux visiblement américaines (un groupe
+Trane, des rooftop packaged units) et un rendu 3D. Elles ne sont ni en galerie, ni
+en page service : afficher une toiture américaine sous un `alt` « installation
+Perth » revient à inventer une réalisation, ce que le brief interdit.
 
-```bash
-vercel --prod
-```
-
-`vercel.json` ajoute `X-Robots-Tag: noindex, nofollow` sur toutes les réponses,
-en plus des balises meta, et met les assets en cache un an.
+La galerie ne contient donc que du réel, et le dit explicitement en tête de page.
 
 ## Contenu à fournir
 
-Tout ce qui manque est marqué `[entre crochets]` en orange dans les pages :
+Tout ce qui manque est marqué `[entre crochets]` et souligné en pointillés :
 
-- horaires d'ouverture ;
-- numéro de licence AU / ARC et ABN ;
-- liens réseaux sociaux (ceux du site actuel sont cassés) ;
+- horaires d'ouverture, adresse exacte ;
+- licence ARC / électricien, ABN ;
+- fiche Google + 3 avis, liens réseaux sociaux ;
 - nom de famille et photo de Daniel ;
-- URL de la fiche Google et trois avis à recopier ;
-- endpoint Formspree pour les deux formulaires (`action` est un placeholder,
-  la validation est aujourd'hui uniquement côté client, rien n'est envoyé).
+- une photo de chantier de ventilation (aucune fournie) ;
+- les FAQ des trois pages service ;
+- l'endpoint Formspree (`action` est un placeholder, rien n'est envoyé) ;
+- un logo haute définition : la source fait 313×147, illisible au-delà de 40 px.
 
-Aucun avis, chiffre, prix, garantie, licence ou ABN n'a été inventé.
-Les seules données chiffrées présentes viennent du contenu fourni
-(« over 20 years of experience »).
+Aucun avis, chiffre, prix, garantie, licence ou certification n'a été inventé.
+La seule donnée chiffrée vient du contenu fourni (« over 20 years of experience »).
+
+## Défauts du site actuel corrigés
+
+| Constat | Traitement |
+|---|---|
+| Shortcode `[contact-form-7 id="15"]` affiché brut, formulaire mort | Formulaire de devis sur l'accueil et sur Contact, avec validation |
+| Liens `http://url/` et `mailto:your@email` | Supprimés ; tous les liens pointent quelque part |
+| Aucune meta description, aucun H1, titres dupliqués | Title et meta uniques par page, exactement un H1 par page |
+| Aucune preuve sociale | Galerie de réalisations réelles + emplacements d'avis Google |
+| Texte citant Daikin et LG, logos montrant Hitachi/Toshiba/Panasonic | Les 9 marques sont citées et affichées de façon cohérente |
+| Menu non sémantique | `<nav>` avec `aria-label`, lien d'évitement, état actif |
+| Images JPG de 2021, ~9 Mo | WebP multi-largeurs avec `srcset` — 4,3 Mo de sources → 1,3 Mo |
+| Fautes (« client's », « if your systems need serviced ») | Textes réécrits en anglais australien correct |
 
 ## Animations
 
 | Effet | Où |
 |---|---|
-| Flux d'air en canvas, dévié par le curseur | hero de l'accueil |
+| Flux d'air en canvas, dévié par le curseur | hero |
 | Titres découpés en mots, révélés sous masque | `[data-split]` |
 | Apparition au scroll en cascade | `[data-reveal]`, `data-delay` en ms |
-| Parallaxe | `[data-parallax="-0.08"]` |
+| Parallaxe | `[data-parallax]` |
 | Boutons magnétiques | `[data-magnetic]` |
 | Inclinaison 3D au survol | `[data-tilt]` |
-| Curseur anneau | global, souris uniquement |
+| Curseur anneau qui grossit sur les cibles | souris uniquement |
 | Barre de progression de lecture | haut de page |
 | Soulignement de nav suiveur | header |
+| Zoom photo + légende qui monte | vignettes de galerie |
+| Bandeau marques défilant, couleur au survol | accueil |
 | Compteur | « 20+ years » |
-| Lightbox clavier (←, →, Échap) | galerie |
+| Lightbox clavier (←, →, Échap) avec piège à focus | galerie |
 
-Tout est neutralisé sous `prefers-reduced-motion: reduce` ; le canvas et le
-curseur personnalisé sont désactivés sur pointeur tactile.
+Tout est neutralisé sous `prefers-reduced-motion: reduce` ; canvas et curseur
+personnalisé sont désactivés sur pointeur tactile.
 
 ## Conversion et SEO
 
 - Barre « Call now » fixe en bas d'écran sous 880 px.
-- Numéro visible dans le bandeau haut et dans le header sur toutes les pages.
-- JSON-LD `HVACBusiness` sur chaque page (nom, téléphones, email, Innaloo, zone Perth).
-- Titres et meta descriptions par page ciblant « air conditioning Perth »,
-  « split system installation Perth », « ducted air conditioning Perth », « Innaloo ».
+- Numéro visible dans le bandeau haut et dans le header sur les 8 pages.
+- JSON-LD `HVACBusiness` par page : nom, deux téléphones, email, zone Perth, marques.
+- Title et meta description uniques ciblant « air conditioning Perth »,
+  « split system installation Perth », « ducted air conditioning Perth »,
+  « aircon service Perth », « mechanical ventilation Perth ».
+- `robots.txt` en `Disallow: /`, `sitemap.xml`, favicon SVG redessiné à partir du
+  flocon du logo (la source 512×512 était un agrandissement bitmap).
 
 ## Accessibilité
 
-Lien d'évitement, focus visible, `alt` sur toutes les images, libellés sur tous
-les champs, contrastes AA — l'orange existe en deux valeurs, `#c2410c` sur fond
-clair et `#f97316` sur fond noir, pour rester au-dessus de 4,5:1 dans les deux cas.
+Lien d'évitement, focus visible, un seul H1 par page, `alt` descriptif sur toutes
+les images, libellés sur tous les champs, erreurs de formulaire annoncées via
+`aria-live` et `aria-invalid`, lightbox modale au clavier avec piège à focus.

@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
@@ -16,7 +17,7 @@
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     },
     {
-      "source": "/public/images/(.*)",
+      "source": "/img/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     }
   ]

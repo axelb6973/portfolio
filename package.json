@@ -1,0 +1,17 @@
+{
+  "name": "acdc-air-conditioning-mockup",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Maquette de demonstration - proposition de refonte pour ACDC Air Conditioning (Perth, WA).",
+  "scripts": {
+    "images": "python3 tools/images.py",
+    "pages": "python3 tools/build.py",
+    "css": "tailwindcss -i src/css/tailwind.css -o dist/assets/site.css --minify",
+    "build": "npm run images && npm run pages && npm run css",
+    "dev": "npm run build && python3 -m http.server 8000 --directory dist"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.13",
+    "tailwindcss": "^4.1.13"
+  }
+}

@@ -1,4 +1,3 @@
-public/images/*.png
-public/images/gallery/*.jpg
+node_modules/
 .vercel/
 .DS_Store
