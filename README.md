@@ -72,7 +72,8 @@ La galerie ne contient donc que du réel, et le dit explicitement en tête de pa
 
 ## Contenu à fournir
 
-Tout ce qui manque est marqué `[entre crochets]` et souligné en pointillés :
+Tout ce qui manque porte le même marqueur dans les pages : une croix suivie du
+libellé et de la mention « to confirm with Daniel ». Liste :
 
 - horaires d'ouverture, adresse exacte ;
 - licence ARC / électricien, ABN ;
@@ -81,7 +82,11 @@ Tout ce qui manque est marqué `[entre crochets]` et souligné en pointillés :
 - une photo de chantier de ventilation (aucune fournie) ;
 - les FAQ des trois pages service ;
 - l'endpoint Formspree (`action` est un placeholder, rien n'est envoyé) ;
-- un logo haute définition : la source fait 313×147, illisible au-delà de 40 px.
+- un logo haute définition, vectoriel de préférence : la source fait 313×147 et
+  64 % de ses pixels ont une alpha intermédiaire, c'est un halo anti-aliasé et non
+  une forme détourable. Le footer compose donc sa propre marque (flocon vectoriel +
+  « ACDC » typographié) plutôt que d'afficher le PNG sur fond sombre, où il rend
+  comme une tache. Le header garde la version couleur d'origine.
 
 Aucun avis, chiffre, prix, garantie, licence ou certification n'a été inventé.
 La seule donnée chiffrée vient du contenu fourni (« over 20 years of experience »).

@@ -60,7 +60,7 @@ REVIEWS = [
     ("Review on ServiceSeeking", "ServiceSeeking", "5/5", "6 years ago",
      "Arrived on time and did a great job. Will definitely use again."),
     ("Prabal Pokharel", "Google", "5/5", "8 months ago",
-     "Easily 5 stars. <span class=\"todo\">[full text to be pulled from the Google listing]</span>"),
+     "Easily 5 stars. &hellip;"),
 ]
 
 GALLERY = [
@@ -98,6 +98,25 @@ GALLERY = [
      "Daikin split system on display with energy saving information",
      "Choosing the right split system"),
 ]
+
+
+SNOWFLAKE = ('<svg class="flake" viewBox="0 0 64 64" aria-hidden="true">'
+             '<path d="M32 8v48M11.2 20l41.6 24M11.2 44l41.6-24"/>'
+             '<path d="M32 8l-6 7M32 8l6 7M32 56l-6-7M32 56l6-7"/>'
+             '<path d="M11.2 20l1.2-9.2M11.2 20l-9 2.4M52.8 44l-1.2 9.2M52.8 44l9-2.4"/>'
+             '<path d="M11.2 44l-9-2.4M11.2 44l1.2 9.2M52.8 20l9 2.4M52.8 20l-1.2-9.2"/>'
+             '</svg>')
+
+
+def pending(label):
+    """Marqueur d'information manquante : une croix + le libelle.
+
+    Un seul composant pour tout le site, pour qu'on repere d'un coup d'oeil
+    ce qui reste a obtenir pendant la presentation.
+    """
+    return (f'<span class="pending"><svg viewBox="0 0 16 16" aria-hidden="true">'
+            f'<path d="M4 4l8 8M12 4l-8 8"/></svg>{label} '
+            f'<i>to confirm with Daniel</i></span>')
 
 
 def img(stem, alt, widths, sizes, *, lazy=True, cls="", extra=""):
@@ -221,45 +240,72 @@ def head(page, title, description):
 
 
 def footer():
-    nav_cols = ""
-    for title, items in [
+    cols = [
         ("Services", [("air-conditioning.html", "Air conditioning"),
                       ("mechanical-ventilation.html", "Mechanical ventilation"),
                       ("maintenance.html", "Maintenance"),
                       ("services.html", "All services")]),
         ("Company", [("about.html", "About ACDC"), ("gallery.html", "Our work"),
-                     ("contact.html", "Contact"), ("contact.html#quote", "Free quote")]),
-    ]:
+                     ("contact.html", "Contact"), ("contact.html#quote", "Request a quote")]),
+    ]
+    nav_cols = ""
+    for title, items in cols:
         rows = "".join(f'<a href="{h}">{t}</a>' for h, t in items)
-        nav_cols += f'<div><h2>{title}</h2><nav>{rows}</nav></div>'
+        nav_cols += (f'<div><h2 class="footer-head">{title}</h2>'
+                     f'<nav class="footer-nav">{rows}</nav></div>')
+
+    brands = " &middot; ".join(["Actron Air", "Daikin", "Fujitsu", "LG", "Mitsubishi",
+                               "Samsung", "Panasonic", "Hitachi", "Toshiba"])
 
     return f"""</main>
 
 <footer class="footer">
-  <div class="lane grid gap-12 text-[14px] md:grid-cols-[1.6fr_1fr_1fr_1fr]">
-    <div class="grid content-start gap-4">
-      <img src="img/acdc-logo.png" alt="ACDC Air Conditioning" width="313" height="147"
-           class="h-10 w-auto object-contain">
-      <p class="text-fog">{TAGLINE}.</p>
-      <p class="text-fog">{ADDRESS[0]}, {ADDRESS[1]} {ADDRESS[2]} {ADDRESS[3]}</p>
-      <p>
-        <a href="tel:{TEL_LAND[0]}" class="font-semibold hover:text-signal-blue">{TEL_LAND[1]}</a> &middot;
-        <a href="tel:{TEL_MOB[0]}" class="font-semibold hover:text-signal-blue">{TEL_MOB[1]}</a><br>
-        <a href="mailto:{EMAIL}" class="font-semibold hover:text-signal-blue">{EMAIL}</a>
-      </p>
+  <div class="lane">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="footer-mark" aria-label="ACDC Air Conditioning, home">
+          {SNOWFLAKE}
+          <span class="footer-mark-word">ACDC</span>
+          <span class="footer-mark-sub">Air-conditioning &middot; Domestic &middot; Commercial<br>
+            Service &amp; Installation</span>
+        </a>
+        <p class="footer-tagline">{TAGLINE}.</p>
+        <p>{pending("High-resolution logo")}</p>
+      </div>
+
+      <address class="footer-contact">
+        <a href="tel:{TEL_LAND[0]}" class="footer-tel">{TEL_LAND[1]}</a>
+        <a href="tel:{TEL_MOB[0]}" class="footer-tel">{TEL_MOB[1]}</a>
+        <a href="mailto:{EMAIL}" class="footer-mail">{EMAIL}</a>
+        <p class="footer-addr">{ADDRESS[0]}, {ADDRESS[1]} {ADDRESS[2]} {ADDRESS[3]}<br>
+          Serving the Perth Metropolitan Area</p>
+      </address>
     </div>
-    {nav_cols}
-    <div>
-      <h2>Details</h2>
-      <p class="py-1"><span class="todo">Trading hours [to be supplied]</span></p>
-      <p class="py-1"><span class="todo">ARC / electrical licence [to be supplied]</span></p>
-      <p class="py-1"><span class="todo">ABN [to be supplied]</span></p>
-      <p class="py-1"><span class="todo">Google listing &amp; socials [to be supplied]</span></p>
+
+    <div class="footer-grid">
+      {nav_cols}
+      <div>
+        <h2 class="footer-head">Trading hours</h2>
+        <p>{pending("Opening hours")}</p>
+        <h2 class="footer-head mt-8">Licensing</h2>
+        <p>{pending("ARC / electrical licence")}</p>
+        <p>{pending("ABN")}</p>
+      </div>
+      <div>
+        <h2 class="footer-head">Follow</h2>
+        <p>{pending("Facebook &amp; Instagram")}</p>
+        <p><a href="https://www.google.com/search?q=acdc+air+innaloo" rel="noopener"
+              class="footer-link-inline">Google reviews <span class="chev">&rsaquo;</span></a></p>
+      </div>
     </div>
-  </div>
-  <div class="lane mt-12 flex flex-wrap justify-between gap-4 border-t border-[#3f3f3f] pt-6 text-[12px]">
-    <p>&copy; 2026 ACDC Air Conditioning &middot; Perth Metropolitan Area, Western Australia</p>
-    <p class="text-ash">Demonstration mock-up &ndash; proposed redesign. Not an official ACDC website.</p>
+
+    <p class="footer-brands">We install and service {brands}.</p>
+
+    <div class="footer-base">
+      <p>&copy; 2026 ACDC Air Conditioning &middot; Innaloo, Western Australia</p>
+      <p class="footer-demo">Demonstration mock-up &ndash; proposed redesign.
+        Not the official ACDC Air Conditioning website.</p>
+    </div>
   </div>
 </footer>
 
@@ -515,7 +561,7 @@ def page_home():
       <h2 class="heading split" data-split>What our customers say.</h2>
       <p class="text-[14px] text-slate" data-reveal data-delay="160">
         Published reviews, quoted as written.
-        <span class="todo">[to be replaced by the live Google reviews widget]</span>
+        {pending("Live Google reviews widget")}
       </p>
     </header>
     <div class="grid gap-12 md:grid-cols-3">
@@ -604,10 +650,10 @@ def page_about():
   <div class="lane grid items-start gap-16 lg:grid-cols-[1fr_1.2fr]">
     <figure class="grid gap-4" data-reveal>
       <div class="grid aspect-4/5 place-items-center rounded bg-white p-6 text-center">
-        <span class="todo">[Photo of Daniel to be supplied]</span>
+        {pending("Portrait photo")}
       </div>
       <figcaption class="grid gap-0.5 text-[14px]">
-        <b class="font-semibold text-iron">Daniel <span class="todo">[surname to be confirmed]</span></b>
+        <b class="font-semibold text-iron">Daniel {pending("Surname")}</b>
         <span class="text-[12px] text-ash">Owner &middot; ACDC Air Conditioning</span>
       </figcaption>
     </figure>
@@ -619,8 +665,7 @@ def page_about():
       </p>
       <p data-reveal data-delay="200">
         Based at {ADDRESS[0]}, {ADDRESS[1]} {ADDRESS[2]} {ADDRESS[3]}. &middot;
-        <span class="todo">ARC / electrical licence [to be supplied]</span> &middot;
-        <span class="todo">ABN [to be supplied]</span>
+        {pending("ARC / electrical licence")} {pending("ABN")}
       </p>
       <p data-reveal data-delay="260">
         <a class="btn btn-ghost-dark" href="gallery.html" data-magnetic>See our work <span class="chev">&rsaquo;</span></a>
@@ -653,7 +698,7 @@ def page_services():
         media = (f'<div class="overflow-hidden rounded">{img(stem, alt, [480, 800], "(min-width: 768px) 33vw, 100vw", cls="w-full transition-transform duration-700 group-hover:scale-105")}</div>'
                  if stem else
                  '<div class="grid aspect-4/3 place-items-center rounded bg-fog p-6 text-center">'
-                 '<span class="todo">[Ventilation photo to be supplied]</span></div>')
+                 '{pending("Ventilation photo")}</div>')
         out += f"""      <article class="group card" data-reveal data-delay="{i * 90}">
         <h2 class="card-name">{name}</h2>
         <p class="card-desc">{desc}</p>
@@ -691,7 +736,7 @@ def service_page(title, lede, paragraphs, bullets, benefits, stem, alt, faq_note
              f'{img(stem, alt, [480, 800], "(min-width: 1024px) 50vw, 100vw", cls="w-full")}'
              f'</figure>' if stem else
              '<div class="grid aspect-4/3 place-items-center rounded bg-fog p-8 text-center" '
-             'data-reveal data-delay="150"><span class="todo">[Photo to be supplied]</span></div>')
+             'data-reveal data-delay="150">{pending("Photo")}</div>')
 
     return f"""<section class="pagehead">
   <div class="lane">
@@ -720,7 +765,7 @@ def service_page(title, lede, paragraphs, bullets, benefits, stem, alt, faq_note
     </div>
     <div class="grid gap-6">
       <h2 class="heading split" data-split>Frequently asked</h2>
-      <p data-reveal data-delay="160"><span class="todo">[FAQ to be supplied &mdash; {faq_note}]</span></p>
+      <p data-reveal data-delay="160">{pending("FAQ &mdash; " + faq_note)}</p>
     </div>
   </div>
 </section>
@@ -764,7 +809,7 @@ def page_gallery():
     <div class="tiles" id="gallery">
 {tiles}    </div>
     <p class="mt-12 text-[14px] text-slate" data-reveal>
-      <span class="todo">[More recent job photos to be supplied]</span> &mdash;
+      {pending("More recent job photos")} &mdash;
       phone photos from the last few jobs are worth more here than anything from the archive.
     </p>
   </div>
@@ -791,10 +836,9 @@ def page_contact():
         ("Mobile", f'<a href="tel:{TEL_MOB[0]}" class="hover:text-signal-blue">{TEL_MOB[1]}</a>'),
         ("Email", f'<a href="mailto:{EMAIL}" class="hover:text-signal-blue">{EMAIL}</a>'),
         ("Service area", "Perth Metropolitan Area, Western Australia"),
-        ("Address", f'{ADDRESS[0]}, {ADDRESS[1]} {ADDRESS[2]} {ADDRESS[3]}'
-                    '<br><span class="todo">[to be confirmed with Daniel]</span>'),
-        ("Trading hours", '<span class="todo">[to be supplied]</span>'),
-        ("Licence / ABN", '<span class="todo">[ARC licence and ABN to be supplied]</span>'),
+        ("Address", f'{ADDRESS[0]}, {ADDRESS[1]} {ADDRESS[2]} {ADDRESS[3]}'),
+        ("Trading hours", pending("Opening hours")),
+        ("Licence / ABN", pending("ARC licence and ABN")),
     ]
     dl = "".join(
         f'<div data-reveal data-delay="{i*70}">'
@@ -811,7 +855,7 @@ def page_contact():
 
 <section class="section">
   <div class="lane grid items-start gap-16 lg:grid-cols-2">
-    <dl class="grid gap-6">{dl}</dl>
+    <dl class="contactinfo grid gap-6">{dl}</dl>
     <div class="overflow-hidden rounded bg-fog" data-reveal data-delay="150">
       <iframe title="ACDC Air Conditioning, 57A Boronia St, Innaloo WA"
               src="https://www.google.com/maps?q=57A%20Boronia%20St%2C%20Innaloo%20WA%206018&amp;hl=en&amp;z=14&amp;output=embed"

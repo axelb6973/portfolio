@@ -72,9 +72,6 @@
           line-height: 1.43; color: var(--color-iron); }
   .chev { display: inline-block; transition: transform .35s var(--ease-dji); }
   a:hover .chev, button:hover .chev, .card:hover .chev { transform: translateX(5px); }
-  /* placeholders : toujours reperables, jamais confondus avec du contenu valide */
-  .todo { color: var(--color-slate); font-weight: 600;
-          border-bottom: 1px dashed var(--color-slate); }
 
   /* ---------- boutons : pilule 64px, sans exception ---------- */
   .btn { display: inline-flex; align-items: center; gap: 6px; font-size: 14px;
@@ -231,14 +228,75 @@
     border-color: var(--color-iron); border-width: 2px; }
   .field-error { font-size: 12px; font-weight: 600; color: var(--color-iron); }
 
+  /* ---------- marqueur d'information manquante ---------- */
+  .pending { display: inline-flex; align-items: center; gap: 8px; font-size: 13px;
+             font-weight: 600; color: var(--color-slate); }
+  .pending svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor;
+                 stroke-width: 2; stroke-linecap: round; }
+  .pending i { font-style: normal; font-weight: 400; color: var(--color-ash); }
+  /* en colonne etroite, le libelle et la mention se cassaient n'importe ou :
+     on les empile sous la croix plutot que de les laisser se repartir. */
+  .footer-grid .pending, .contactinfo .pending { display: grid; align-items: start;
+    grid-template-columns: auto 1fr; gap: 2px 8px; }
+  .footer-grid .pending svg, .contactinfo .pending svg { margin-top: 4px; }
+  .footer-grid .pending i, .contactinfo .pending i { grid-column: 2; }
+  .section-dark .pending, .pagehead .pending { color: var(--color-fog); }
+  .section-dark .pending i, .pagehead .pending i { color: var(--color-ash); }
+
   /* ---------- footer ---------- */
-  .footer { background: var(--color-carbon); color: #fff; padding: 48px 0 24px; }
-  .footer h2 { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+  .footer { background: var(--color-carbon); color: #fff; padding: 88px 0 24px; }
   .footer a { color: var(--color-fog); }
-  .footer nav a { display: block; padding: 4px 0;
+
+  .footer-top { display: grid; gap: 48px; padding-bottom: 48px;
+                border-bottom: 1px solid #3a3a3a; }
+  @media (min-width: 768px) { .footer-top { grid-template-columns: 1.4fr 1fr; } }
+
+  .footer-brand { display: grid; gap: 24px; align-content: start; }
+  /* Le logo source est un PNG dont 64 % des pixels ont une alpha intermediaire :
+     un halo anti-aliase, pas une forme detourable. Le passer en silhouette blanche
+     donne une tache. Le footer compose donc sa propre marque, nette a toute taille,
+     en attendant un logo vectoriel. Le header garde la version couleur. */
+  .footer-mark { display: grid; grid-template-columns: auto 1fr; align-items: center;
+                 gap: 4px 14px; width: max-content; }
+  .footer-mark .flake { grid-row: span 2; width: 46px; height: 46px; fill: none;
+                        stroke: var(--color-signal-blue); stroke-width: 3.4;
+                        stroke-linecap: round; transition: transform .8s var(--ease-expo); }
+  .footer-mark:hover .flake { transform: rotate(120deg); }
+  .footer-mark-word { align-self: end; font-size: 30px; font-weight: 600;
+                      letter-spacing: .2em; line-height: 1; color: #fff; }
+  .footer-mark-sub { align-self: start; font-size: 10px; font-weight: 600;
+                     letter-spacing: .16em; line-height: 1.7; text-transform: uppercase;
+                     color: var(--color-ash); }
+  .footer-tagline { max-width: 42ch; font-size: 20px; font-weight: 300;
+                    line-height: 1.43; letter-spacing: -.02em; color: var(--color-fog); }
+
+  .footer-contact { display: grid; gap: 4px; align-content: start; font-style: normal; }
+  .footer-tel { font-size: 24px; font-weight: 300; letter-spacing: -.02em; color: #fff;
+                transition: color .25s; }
+  .footer-tel:hover { color: var(--color-signal-blue); }
+  .footer-mail { margin-top: 8px; font-size: 14px; color: var(--color-fog);
+                 transition: color .25s; }
+  .footer-mail:hover { color: var(--color-signal-blue); }
+  .footer-addr { margin-top: 16px; font-size: 14px; color: var(--color-ash); }
+
+  .footer-grid { display: grid; gap: 48px; padding: 48px 0; font-size: 14px; }
+  @media (min-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .footer-grid { grid-template-columns: repeat(4, 1fr); } }
+  .footer-grid p { margin-bottom: 8px; }
+  .footer-head { font-size: 12px; font-weight: 600; letter-spacing: .14em;
+                 text-transform: uppercase; color: var(--color-ash); margin-bottom: 16px; }
+  .footer-nav a { display: block; padding: 5px 0;
                   transition: color .25s, transform .3s var(--ease-dji); }
-  .footer nav a:hover { color: #fff; transform: translateX(4px); }
-  .footer .todo { color: var(--color-ash); border-color: var(--color-ash); }
+  .footer-nav a:hover { color: #fff; transform: translateX(4px); }
+  .footer-link-inline { font-weight: 600; transition: color .25s; }
+  .footer-link-inline:hover { color: var(--color-signal-blue); }
+
+  .footer-brands { padding-bottom: 32px; font-size: 12px; color: var(--color-ash); }
+
+  .footer-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px;
+                 border-top: 1px solid #3a3a3a; padding-top: 24px; font-size: 12px;
+                 color: var(--color-ash); }
+  .footer-demo { color: var(--color-slate); }
 
   /* ---------- chrome ---------- */
   .scroll-progress { position: fixed; inset: 0 0 auto 0; height: 2px; z-index: 60;
