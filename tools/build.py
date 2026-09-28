@@ -8,10 +8,21 @@ n'execute rien.
     python3 tools/build.py
 """
 import html
+import os
 import pathlib
+import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
+
+# Bascule de publication. Par defaut on construit la maquette : noindex partout
+# et bandeau de demonstration. Pour le site reel :
+#     SITE_URL=https://acdcair.com.au DEMO=0 npm run build
+SITE_URL = os.environ.get("SITE_URL", "https://example.invalid").rstrip("/")
+# Le CSS est injecte dans chaque page : une requete bloquante en moins, et
+# 6,7 Ko gzip absorbes par la reponse HTML qui part de toute facon.
+CRITICAL_CSS = ""
+DEMO = os.environ.get("DEMO", "1") != "0"
 
 # --------------------------------------------------------------------------
 # Donnees reelles. Rien ici n'est invente : ce qui manque est un [placeholder].
@@ -140,21 +151,43 @@ def pending(label):
 
 
 def img(stem, alt, widths, sizes, *, lazy=True, cls="", extra=""):
-    """Un <img> WebP avec srcset. width/height fixes : pas de saut de mise en page."""
-    srcset = ", ".join(f"img/{stem}-{w}.webp {w}w" for w in widths)
+    """<picture> AVIF puis WebP. width/height fixes : aucun saut de mise en page."""
     biggest = max(widths)
     ratio = 549 / 720 if stem.startswith("hero-") else 600 / 800
-    loading = 'loading="lazy" decoding="async"' if lazy else 'fetchpriority="high"'
-    return (f'<img src="img/{stem}-{biggest}.webp" srcset="{srcset}" sizes="{sizes}" '
-            f'alt="{alt}" width="{biggest}" height="{round(biggest * ratio)}" '
-            f'{loading} class="{cls}"{extra}>')
+    loading = ('loading="lazy" decoding="async"' if lazy
+               else 'fetchpriority="high" decoding="async"')
+    sources = "".join(
+        f'<source type="image/{ext}" sizes="{sizes}" srcset="'
+        + ", ".join(f"img/{stem}-{w}.{ext} {w}w" for w in widths) + '">'
+        for ext in ("avif", "webp")
+    )
+    return (f'<picture>{sources}'
+            f'<img src="img/{stem}-{biggest}.webp" alt="{alt}" '
+            f'width="{biggest}" height="{round(biggest * ratio)}" '
+            f'{loading} class="{cls}"{extra}></picture>')
 
 
-def jsonld(page_name):
+def breadcrumbs(page, label):
+    if page == "index.html":
+        return ""
+    return f""",
+  {{
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {{ "@type": "ListItem", "position": 1, "name": "Home", "item": "{SITE_URL}/" }},
+      {{ "@type": "ListItem", "position": 2, "name": "{label}",
+         "item": "{SITE_URL}/{page.replace('.html', '')}" }}
+    ]
+  }}"""
+
+
+def jsonld(page_name, label=""):
     return f"""<script type="application/ld+json">
+{{ "@context": "https://schema.org", "@graph": [
 {{
-  "@context": "https://schema.org",
   "@type": "HVACBusiness",
+  "@id": "{SITE_URL}/#business",
+  "url": "{SITE_URL}/",
   "name": "ACDC Air Conditioning",
   "slogan": "Fast & reliable heating and air conditioning service in Perth Metropolitan area",
   "email": "{EMAIL}",
@@ -173,15 +206,28 @@ def jsonld(page_name):
                  "Preventative maintenance"],
   "brand": ["Actron Air", "Daikin", "Fujitsu", "LG", "Mitsubishi", "Samsung",
             "Panasonic", "Hitachi", "Toshiba"]
-}}
+  }}{breadcrumbs(page_name, label)}
+] }}
 </script>"""
 
 
-def head(page, title, description):
+def head(page, title, description, label="", og_image="hero-crane-lift-perth-720"):
     links = "\n".join(
-        f'        <a href="{href}" class="nav-link{" is-current" if href == page else ""}">{label}</a>'
-        for href, label in NAV
+        f'        <a href="{href}" class="nav-link{" is-current" if href == page else ""}">{label_}</a>'
+        for href, label_ in NAV
     )
+    canonical = f"{SITE_URL}/" if page == "index.html" else f"{SITE_URL}/{page.replace('.html', '')}"
+    # la 404 ne doit jamais entrer dans l'index, meme hors demo
+    robots = ("noindex, nofollow" if DEMO or page == "404.html"
+              else "index, follow, max-image-preview:large, max-snippet:-1")
+    plain_title = html.unescape(title).replace("&", "&amp;")
+
+    demo_banner = ("""<p class="demo-banner">
+  Demonstration mock-up &mdash; proposed redesign.
+  <span>Not the official ACDC Air Conditioning website.</span>
+</p>
+""" if DEMO else "")
+
     return f"""<!doctype html>
 <html lang="en-AU">
 <head>
@@ -189,14 +235,33 @@ def head(page, title, description):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 <meta name="description" content="{description}">
-<meta name="robots" content="noindex, nofollow">
+<meta name="robots" content="{robots}">
+<link rel="canonical" href="{canonical}">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_AU">
+<meta property="og:site_name" content="ACDC Air Conditioning">
+<meta property="og:title" content="{plain_title}">
+<meta property="og:description" content="{description}">
+<meta property="og:url" content="{canonical}">
+<meta property="og:image" content="{SITE_URL}/img/{og_image}.webp">
+<meta property="og:image:alt" content="Crane lifting an air conditioning unit over a house in Perth">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{plain_title}">
+<meta name="twitter:description" content="{description}">
+<meta name="twitter:image" content="{SITE_URL}/img/{og_image}.webp">
+
+<meta name="geo.region" content="AU-WA">
+<meta name="geo.placename" content="Innaloo, Perth">
+<meta name="geo.position" content="-31.893;115.795">
+<meta name="ICBM" content="-31.893, 115.795">
 <meta name="theme-color" content="#000000">
+
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/site.css">
-{jsonld(page)}
+<link rel="preload" as="font" type="font/woff2" href="assets/open-sans.woff2" crossorigin>
+<link rel="preload" as="image" href="img/{og_image}.avif" type="image/avif" fetchpriority="high">
+<style>{CRITICAL_CSS}</style>
+{jsonld(page, label)}
 </head>
 <body>
 
@@ -204,12 +269,8 @@ def head(page, title, description):
 <div class="scroll-progress" aria-hidden="true"><span id="scrollBar"></span></div>
 <div class="cursor" id="cursor" aria-hidden="true"></div>
 
-<p class="bg-signal-blue px-6 py-2 text-center text-[12px] font-semibold text-white">
-  Demonstration mock-up &mdash; proposed redesign.
-  <span class="font-normal">Not the official ACDC Air Conditioning website.</span>
-</p>
-
-<div class="bg-carbon text-fog text-[12px] tracking-wider">
+{demo_banner}
+<div class="topbar">
   <div class="lane flex flex-wrap items-center justify-between gap-4 py-2">
     <p>Perth Metropolitan Area, Western Australia</p>
     <p class="flex items-center gap-2">
@@ -223,8 +284,12 @@ def head(page, title, description):
 <header class="nav" id="nav">
   <div class="lane flex min-h-16 items-center gap-6">
     <a href="index.html" class="flex items-center" data-magnetic>
-      <img src="img/acdc-logo.png" alt="ACDC Air Conditioning" width="313" height="147"
-           class="h-9 w-auto object-contain">
+      <picture>
+        <source type="image/avif" srcset="img/acdc-logo-313.avif">
+        <source type="image/webp" srcset="img/acdc-logo-313.webp">
+        <img src="img/acdc-logo.png" alt="ACDC Air Conditioning" width="313" height="147"
+             class="h-9 w-auto object-contain" fetchpriority="high" decoding="async">
+      </picture>
     </a>
 
     <nav class="relative mx-auto hidden gap-6 md:flex" id="navLinks" aria-label="Main">
@@ -327,8 +392,8 @@ def footer():
 
     <div class="footer-base">
       <p>&copy; 2026 ACDC Air Conditioning &middot; Innaloo, Western Australia</p>
-      <p class="footer-demo">Demonstration mock-up &ndash; proposed redesign.
-        Not the official ACDC Air Conditioning website.</p>
+      {'<p class="footer-demo">Demonstration mock-up &ndash; proposed redesign. '
+        'Not the official ACDC Air Conditioning website.</p>' if DEMO else ''}
     </div>
   </div>
 </footer>
@@ -418,8 +483,10 @@ def cta_band(heading, copy):
 def brand_strip():
     logos = ""
     for stem, name, w in BRAND_LOGOS:
-        logos += (f'<img src="img/{stem}-{w}.webp" alt="{name}" width="{w}" height="90" '
-                  f'loading="lazy" decoding="async">')
+        logos += (f'<picture>'
+                  f'<source type="image/avif" srcset="img/{stem}-{w}.avif">'
+                  f'<img src="img/{stem}-{w}.webp" alt="{name}" width="{w}" height="90" '
+                  f'loading="lazy" decoding="async"></picture>')
     for word in BRAND_WORDS:
         logos += f'<span class="marquee-word">{word}</span>'
     return f"""<div class="marquee" aria-label="Brands we install and service">
@@ -752,13 +819,49 @@ def page_services():
 {out}  </div>
 </section>
 
-{cta_band("Not sure which one you need? Describe the problem.",
-          "Tell us what the building does and what the system is doing wrong. "
-          "We&rsquo;ll tell you which of the three it is.")}
+<section class="section">
+  <div class="lane">
+    <header class="sechead">
+      <p class="eyebrow" data-reveal>Which one</p>
+      <h2 class="heading split" data-split>Start from the symptom, not the catalogue.</h2>
+    </header>
+    <div class="grid gap-12 md:grid-cols-3">
+      <article class="grid content-start gap-3" data-reveal>
+        <h3 class="text-[20px] font-semibold tracking-[-0.02em] text-iron">The room is too hot or too cold</h3>
+        <p class="text-[14px]">That is an air conditioning question: either there is no system,
+          or the one there is was never sized for the space. Either way it starts with a survey
+          of the room, its orientation and its glazing.</p>
+        <a href="air-conditioning.html" class="text-[14px] font-semibold text-signal-blue">
+          Air conditioning <span class="chev">&rsaquo;</span></a>
+      </article>
+      <article class="grid content-start gap-3" data-reveal data-delay="90">
+        <h3 class="text-[20px] font-semibold tracking-[-0.02em] text-iron">The air is stale, damp or full of fumes</h3>
+        <p class="text-[14px]">Cooling will not fix that. Air has to be moved out and replaced,
+          at the rate the use of the space demands, which is a ventilation design rather than a
+          bigger air conditioner.</p>
+        <a href="mechanical-ventilation.html" class="text-[14px] font-semibold text-signal-blue">
+          Mechanical ventilation <span class="chev">&rsaquo;</span></a>
+      </article>
+      <article class="grid content-start gap-3" data-reveal data-delay="180">
+        <h3 class="text-[20px] font-semibold tracking-[-0.02em] text-iron">It worked better last summer</h3>
+        <p class="text-[14px]">Gradual loss of performance is the signature of a dirty coil, a
+          slow refrigerant leak or a blocked drain. All three are cheap while they are still
+          gradual, and expensive once the compressor goes.</p>
+        <a href="maintenance.html" class="text-[14px] font-semibold text-signal-blue">
+          Maintenance <span class="chev">&rsaquo;</span></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+{cta_band("Describe the problem, not the product.",
+          "What the building is used for, what the system is doing wrong, and when it started. "
+          "That is enough for us to tell you which of the three it is.")}
 """
 
 
-def service_page(title, lede, paragraphs, bullets, benefits, stem, alt, faq_note):
+def service_page(title, lede, paragraphs, bullets, benefits, stem, alt, faq_note,
+                 deep_title, deep_blocks, cta_title, cta_copy):
     paras = "".join(f'<p data-reveal data-delay="{120 + i*60}">{p}</p>'
                     for i, p in enumerate(paragraphs))
     tick = "".join(f"<li>{b}</li>" for b in bullets)
@@ -766,6 +869,12 @@ def service_page(title, lede, paragraphs, bullets, benefits, stem, alt, faq_note
         f'<article class="card" data-reveal data-delay="{i*80}" data-tilt>'
         f'<h3 class="card-name text-[20px]">{t}</h3><p class="card-desc">{d}</p></article>'
         for i, (t, d) in enumerate(benefits))
+    deep = "".join(
+        f'<article class="grid content-start gap-3" data-reveal data-delay="{i*80}">'
+        f'<h3 class="text-[20px] font-semibold tracking-[-0.02em] text-iron">{t}</h3>'
+        f'<p class="text-[14px]">{d}</p></article>'
+        for i, (t, d) in enumerate(deep_blocks))
+
     media = (f'<figure class="overflow-hidden rounded" data-reveal data-delay="150">'
              f'{img(stem, alt, [480, 800], "(min-width: 1024px) 50vw, 100vw", cls="w-full")}'
              f'</figure>' if stem else
@@ -799,7 +908,12 @@ def service_page(title, lede, paragraphs, bullets, benefits, stem, alt, faq_note
     </div>
     <div class="grid gap-6">
       <h2 class="heading split" data-split>Frequently asked</h2>
-      <p data-reveal data-delay="160">{pending("FAQ &mdash; " + faq_note)}</p>
+      <div class="awaiting" data-reveal data-delay="160">
+        {pending("FAQ to write")}
+        <p>Three to five real questions, in Daniel&rsquo;s words: {faq_note}.
+          Answered questions are what Google shows under the result, and what stops
+          the phone ringing for things the page could have answered.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -814,8 +928,17 @@ def service_page(title, lede, paragraphs, bullets, benefits, stem, alt, faq_note
   </div>
 </section>
 
-{cta_band("Ready when you are.",
-          "Every enquiry gets a real answer from someone who works this discipline.")}
+<section class="section section-fog">
+  <div class="lane">
+    <header class="sechead">
+      <p class="eyebrow" data-reveal>Detail</p>
+      <h2 class="heading split" data-split>{deep_title}</h2>
+    </header>
+    <div class="grid gap-12 md:grid-cols-2">{deep}</div>
+  </div>
+</section>
+
+{cta_band(cta_title, cta_copy)}
 """
 
 
@@ -860,7 +983,8 @@ def page_gallery():
 </div>
 
 {cta_band("Want the same done at your place?",
-          "Send the details and we&rsquo;ll come back with a real number.")}
+          "Most of these started as a photo and a rough idea of the space. "
+          "Send yours and we&rsquo;ll come back with a real number.")}
 """
 
 
@@ -1006,19 +1130,19 @@ def page_contact():
 PAGES = [
     ("index.html",
      "Air Conditioning Perth | ACDC Air Conditioning",
-     "Fast and reliable heating and air conditioning service across the Perth Metropolitan Area. "
-     "Split system installation, ducted air conditioning, repairs and maintenance. Over 20 years of experience.",
-     page_home),
+     "Split system installation, ducted air conditioning, repairs and maintenance across "
+     "the Perth Metropolitan Area. Over 20 years of experience.",
+     page_home, "Home"),
     ("about.html",
      "About ACDC Air Conditioning | Perth HVAC Specialists",
-     "ACDC aims to keep you comfortable all year round, delivering the most energy efficient "
-     "air conditioning results across Perth for residential, commercial and industrial clients.",
-     page_about),
+     "Energy efficient air conditioning for residential, commercial and industrial clients "
+     "across Perth. Installation, repair, service and maintenance.",
+     page_about, "About"),
     ("services.html",
      "Air Conditioning Services Perth | Install, Ventilation, Service",
      "Air conditioning, mechanical ventilation and preventative maintenance for homes and "
      "businesses across the Perth Metropolitan Area.",
-     page_services),
+     page_services, "Services"),
     ("air-conditioning.html",
      "Split System &amp; Ducted Air Conditioning Perth | ACDC",
      "Split system installation Perth and ducted air conditioning, plus maintenance and repair "
@@ -1042,11 +1166,39 @@ PAGES = [
           ("A better space", "A building people want to be in is a building that works.")],
          "daikin-outdoor-units-roof-walkway-perth",
          "Daikin outdoor units installed along a roof walkway, Perth",
-         "typical questions on sizing, running cost and install time")),
+         "typical questions on sizing, running cost and install time",
+         "Choosing between a split, a multi-head and ducted.",
+         [("One room, one head",
+           "A single split serves one space. It is the cheapest entry point and the quickest "
+           "install, and it is the right answer for a bedroom, a home office or an extension "
+           "that the rest of the house does not need to cool."),
+          ("Several rooms, one condenser",
+           "A multi-head runs up to five indoor units off one outdoor unit. You get separate "
+           "control per room and only one condenser on the wall, which matters when the side "
+           "of the house is tight or the strata rules limit external plant."),
+          ("Whole house, hidden",
+           "Ducted puts the plant in the roof space and leaves only grilles in the ceiling. "
+           "Zoning lets you shut off the bedrooms during the day. It costs more and it needs "
+           "roof clearance, so it is decided at the survey, not over the phone."),
+          ("Why sizing is the whole job",
+           "An oversized unit cools fast, then short-cycles: it never runs long enough to pull "
+           "humidity out, it wears the compressor, and it costs more to run than the correctly "
+           "sized machine next door. This is why the kilowatt figure comes from the room, "
+           "not from the price list."),
+          ("Refrigerant lines and drainage",
+           "Line length, height difference between indoor and outdoor units, and where the "
+           "condensate actually drains to decide where equipment can go. Getting this wrong "
+           "is the most common reason a system underperforms from day one."),
+          ("Servicing what someone else installed",
+           "You do not have to have bought the system from us for us to maintain or repair it. "
+           "We work across every brand we install, and several we do not.")],
+         "Book a survey, not a phone quote.",
+         "Send the rooms, the orientation and what the building already has. "
+         "The number that comes back is based on the space, not on a guess."), "Air Conditioning"),
     ("mechanical-ventilation.html",
      "Mechanical Ventilation Perth | Car Park, Kitchen, Warehouse | ACDC",
-     "Design, installation, fabrication and commissioning of mechanical ventilation in Perth: "
-     "car park, wet area, toilet exhaust, kitchen range hoods, dust and fume extraction, warehouse.",
+     "Mechanical ventilation in Perth: car park, wet area, toilet exhaust, kitchen range "
+     "hoods, dust and fume extraction and warehouse.",
      lambda: service_page(
          "Ventilation designed for the space it has to clear.",
          "Design, installation, fabrication and commissioning, to standard.",
@@ -1061,11 +1213,38 @@ PAGES = [
           ("Installed", "By the people who designed it."),
           ("Commissioned", "Measured, adjusted and documented before handover.")],
          None, None,
-         "typical questions on compliance, noise and commissioning documents")),
+         "typical questions on compliance, noise and commissioning documents",
+         "What each kind of ventilation has to achieve.",
+         [("Car park",
+           "Exhaust has to clear vehicle emissions at the rate the building code sets for the "
+           "volume and the traffic. Undersized fans fail their commissioning test, not their "
+           "occupants&rsquo; comfort test."),
+          ("Wet areas and toilets",
+           "Moisture that is not extracted ends up in the plasterboard. Extraction is sized to "
+           "the room volume and the number of air changes required, and it has to discharge "
+           "outside, not into the roof space."),
+          ("Kitchen range hoods",
+           "Commercial kitchen extraction carries grease and heat, so the ductwork, the "
+           "filtration and the access panels for cleaning are part of the design, not an "
+           "afterthought bolted on at the end."),
+          ("Dust and fume extraction",
+           "Workshop extraction is designed around the capture point: the closer the hood is "
+           "to the source, the smaller the fan you need and the less energy the system burns "
+           "for the rest of its life."),
+          ("Warehouse",
+           "Large volumes move on stack effect and cross-flow as much as on fans. A design "
+           "that ignores where the openings already are ends up fighting the building."),
+          ("Fabrication and commissioning",
+           "Ductwork is fabricated to suit the building rather than the building being cut to "
+           "suit stock duct. Once installed, flows are measured and adjusted, and the readings "
+           "are what gets handed over.")],
+         "Send the drawings, or the problem.",
+         "A plan set, a photo of the space, or simply what is not clearing. "
+         "Ventilation is sized from the volume and the use, so both are the starting point."), "Mechanical Ventilation"),
     ("maintenance.html",
      "Air Conditioning Service &amp; Maintenance Perth | ACDC",
-     "Preventative maintenance programs for air conditioning and refrigeration across Perth. "
-     "An unmaintained system wastes energy and money, and eventually breaks down.",
+     "Preventative maintenance for air conditioning and refrigeration across Perth. "
+     "An unmaintained system wastes energy, then fails.",
      lambda: service_page(
          "Preventative maintenance beats an emergency call-out.",
          "Programs tailored to your equipment, for air conditioning and refrigeration.",
@@ -1081,27 +1260,50 @@ PAGES = [
           ("Planned, not urgent", "Servicing at a time that suits the site.")],
          "technician-testing-condenser-electrical-panel-perth",
          "Technician testing the electrical panel of a rooftop condenser during commissioning",
-         "typical questions on service frequency, cost and what a visit covers")),
+         "typical questions on service frequency, cost and what a visit covers",
+         "What maintenance actually changes.",
+         [("Filters and coils",
+           "A blocked filter starves the coil of air. The compressor keeps running, the room "
+           "never reaches setpoint, and the power bill climbs without anything looking broken."),
+          ("Refrigerant charge",
+           "A system slowly losing charge cools less each summer. Caught at a service it is a "
+           "leak repair; ignored, it runs the compressor outside its envelope until it fails."),
+          ("Electrical connections",
+           "Terminals loosen with thermal cycling. Checking and retorquing them during a "
+           "service is minutes of work, and it is the difference between a clean run and a "
+           "burnt contactor in February."),
+          ("Condensate drains",
+           "Drains block with biofilm. The first sign is usually a ceiling stain, which costs "
+           "more to repair than a decade of servicing."),
+          ("Refrigeration too",
+           "Cool rooms and display cabinets run continuously and fail expensively, with stock "
+           "loss on top. They belong on the same schedule as the air conditioning."),
+          ("Scheduled beats urgent",
+           "A planned visit happens when the site is quiet. A breakdown happens on the hottest "
+           "day of the year, when every contractor in Perth is already booked.")],
+         "Put the equipment on a schedule.",
+         "Tell us what is on site and how it is used. The program is built around that, "
+         "not around a generic annual visit."), "Maintenance"),
     ("gallery.html",
      "Our Work | Air Conditioning Installations Perth | ACDC",
      "Split system, ducted and VRV air conditioning installations completed by ACDC across Perth "
      "and its surrounding suburbs.",
-     page_gallery),
+     page_gallery, "Gallery"),
     ("privacy.html",
      "Privacy &amp; Terms | ACDC Air Conditioning Perth",
      "How ACDC Air Conditioning handles enquiry details, and the terms that apply to "
      "quotes and work across the Perth Metropolitan Area.",
-     page_privacy),
+     page_privacy, "Privacy"),
     ("404.html",
      "Page not found | ACDC Air Conditioning Perth",
      "That page is not here. Call ACDC Air Conditioning on 0432 230 757 or head back "
      "to the home page.",
-     page_404),
+     page_404, "Not found"),
     ("contact.html",
      "Contact ACDC Air Conditioning | Free Quote, Perth",
-     "Call ACDC Air Conditioning on 0432 230 757 or request a free quote for air conditioning "
-     "installation, repair or maintenance anywhere in the Perth Metropolitan Area.",
-     page_contact),
+     "Call 0432 230 757 or request a free quote for air conditioning installation, repair "
+     "or maintenance across the Perth Metropolitan Area.",
+     page_contact, "Contact"),
 ]
 
 
@@ -1115,34 +1317,77 @@ FAVICON = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   </g>
 </svg>"""
 
-ROBOTS = """# Maquette de demonstration : rien ne doit etre indexe.
-User-agent: *
-Disallow: /
-"""
+def robots_txt():
+    if DEMO:
+        return "# Maquette de demonstration : rien ne doit etre indexe.\nUser-agent: *\nDisallow: /\n"
+    return (f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n")
+
+
+def subset_font():
+    """Reduit la fonte aux caracteres reellement employes par les pages generees."""
+    import subprocess
+    subprocess.run(["python3", str(ROOT / "tools" / "subset_font.py")], check=True)
+
+
+def check_images():
+    """Verifie que chaque image citee par une page existe vraiment dans dist/img."""
+    present = {p.name for p in (DIST / "img").iterdir()} if (DIST / "img").is_dir() else set()
+    wanted = set()
+    for page in DIST.glob("*.html"):
+        wanted |= set(re.findall(r"img/([\w.-]+\.(?:avif|webp|png))", page.read_text(encoding="utf-8")))
+    return wanted - present
 
 
 def main():
+    global CRITICAL_CSS
     DIST.mkdir(parents=True, exist_ok=True)
     (DIST / "assets").mkdir(exist_ok=True)
 
-    for filename, title, description, builder in PAGES:
-        page = head(filename, title, description) + builder() + FOOTER
+    css_file = DIST / "assets" / "site.css"
+    if not css_file.exists():
+        raise SystemExit("dist/assets/site.css absent : lancer `npm run css` avant `npm run pages`.")
+    CRITICAL_CSS = css_file.read_text(encoding="utf-8").strip()
+
+    too_long = [f for f, _, d, *_ in PAGES if len(d) > 160]
+    if too_long:
+        raise SystemExit("meta description > 160 caracteres : " + ", ".join(too_long))
+
+    for filename, title, description, builder, label in PAGES:
+        page = head(filename, title, description, label) + builder() + FOOTER
         (DIST / filename).write_text(page, encoding="utf-8")
         print("wrote", filename)
 
     (DIST / "favicon.svg").write_text(FAVICON, encoding="utf-8")
-    (DIST / "robots.txt").write_text(ROBOTS, encoding="utf-8")
+    (DIST / "robots.txt").write_text(robots_txt(), encoding="utf-8")
 
-    urls = "".join(f"  <url><loc>https://example.invalid/{f}</loc></url>\n"
-                   for f, *_ in PAGES if f != "404.html")
+    today = __import__("datetime").date.today().isoformat()
+    skip = {"404.html", "privacy.html"}
+    priority = {"index.html": "1.0", "contact.html": "0.9", "services.html": "0.8",
+                "air-conditioning.html": "0.8", "gallery.html": "0.7"}
+    urls = ""
+    for f, *_ in PAGES:
+        if f in skip:
+            continue
+        loc = f"{SITE_URL}/" if f == "index.html" else f"{SITE_URL}/{f.replace('.html', '')}"
+        urls += (f"  <url><loc>{loc}</loc><lastmod>{today}</lastmod>"
+                 f"<priority>{priority.get(f, '0.6')}</priority></url>\n")
     (DIST / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<!-- Domaine a remplacer au deploiement. La demo est en noindex. -->\n'
         '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         f"{urls}</urlset>\n", encoding="utf-8")
 
-    (DIST / "assets" / "main.js").write_bytes((ROOT / "src" / "js" / "main.js").read_bytes())
-    print("wrote favicon.svg, robots.txt, sitemap.xml, assets/main.js")
+    (DIST / "assets" / "open-sans.woff2").write_bytes(
+        (ROOT / "src" / "fonts" / "open-sans-latin.woff2").read_bytes())
+    print("wrote favicon.svg, robots.txt, sitemap.xml, assets/open-sans.woff2")
+
+    # la feuille a ete injectee dans les pages : plus rien ne la sert
+    css_file.unlink()
+
+    subset_font()
+
+    missing = check_images()
+    if missing:
+        raise SystemExit("images referencees mais absentes : " + ", ".join(sorted(missing)))
 
 
 if __name__ == "__main__":

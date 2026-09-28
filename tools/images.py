@@ -15,9 +15,14 @@ SRC = ROOT / "photos"
 OUT = ROOT / "dist" / "img"
 
 WIDTHS = (480, 960, 1600)
+# AVIF d'abord, WebP en repli : ~30 % plus leger a qualite percue egale.
+FORMATS = (("avif", {"quality": 52, "speed": 4}),
+           ("webp", {"quality": 82, "method": 6}))
 # on ajoute toujours la largeur native : sans elle, une source 800px
 # ne sortirait qu'en 480 et la vignette serait floue sur ecran retina.
-QUALITY = 82
+# Images reellement referencees par les pages : tout le reste est du poids mort.
+# La liste est verifiee par tools/build.py, qui echoue si une image manque.
+KEEP_UNREFERENCED = {"acdc-logo.png"}
 
 
 # La banniere source est un diptyque (van a gauche, grue a droite) : montee
@@ -45,9 +50,9 @@ def convert(path):
     targets = sorted({w for w in WIDTHS if w <= im.width} | {im.width})
     for w in targets:
         h = round(im.height * w / im.width)
-        im.resize((w, h), Image.LANCZOS).save(
-            OUT / f"{path.stem}-{w}.webp", "WEBP", quality=QUALITY, method=6
-        )
+        resized = im.resize((w, h), Image.LANCZOS)
+        for ext, opts in FORMATS:
+            resized.save(OUT / f"{path.stem}-{w}.{ext}", ext.upper(), **opts)
         made.append(w)
     return made, im.size
 
@@ -64,11 +69,12 @@ def main():
         if path.stem in DIPTYCH:
             continue  # remplace par ses deux moities
         made, size = convert(path)
-        out_bytes = sum((OUT / f"{path.stem}-{w}.webp").stat().st_size for w in made)
+        out_bytes = sum((OUT / f"{path.stem}-{w}.{ext}").stat().st_size
+                        for w in made for ext, _ in FORMATS)
         total_src += path.stat().st_size
         total_out += out_bytes
         print(f"{path.name:58} {size[0]}x{size[1]} -> {made}")
-    # le logo est aussi copie en PNG : transparence conservee pour le header
+    # le PNG reste en dernier recours pour les navigateurs sans AVIF ni WebP
     for keep in ("acdc-logo.png",):
         (OUT / keep).write_bytes((SRC / keep).read_bytes())
         total_out += (SRC / keep).stat().st_size

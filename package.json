@@ -7,11 +7,14 @@
     "images": "python3 tools/images.py",
     "pages": "python3 tools/build.py",
     "css": "tailwindcss -i src/css/tailwind.css -o dist/assets/site.css --minify",
-    "build": "npm run images && npm run pages && npm run css",
-    "dev": "npm run build && python3 -m http.server 8000 --directory dist"
+    "build": "npm run images && npm run css && npm run js && npm run pages",
+    "dev": "npm run build && python3 -m http.server 8000 --directory dist",
+    "js": "terser src/js/main.js -c passes=2 -m --comments false -o dist/assets/main.js",
+    "build:prod": "SITE_URL=$npm_config_site DEMO=0 npm run build"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.13",
-    "tailwindcss": "^4.1.13"
+    "tailwindcss": "^4.1.13",
+    "terser": "^5.51.2"
   }
 }

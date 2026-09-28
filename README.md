@@ -23,14 +23,74 @@ npm run build      # images + pages + CSS
 
 | Étape | Commande | Ce qu'elle fait |
 |---|---|---|
-| Images | `npm run images` | `photos/*.jpg|png` → `dist/img/*.webp` en 480/800/960/1440 selon la source |
-| Pages | `npm run pages` | assemble les 8 pages depuis `tools/build.py` |
-| CSS | `npm run css` | Tailwind CLI v4, purgé et minifié → `dist/assets/site.css` |
+| Images | `npm run images` | `photos/` → AVIF **et** WebP en 480/800/960/1440 selon la source |
+| CSS | `npm run css` | Tailwind CLI v4, purgé et minifié |
+| JS | `npm run js` | terser, 12,5 → 7,5 Ko |
+| Pages | `npm run pages` | assemble les 10 pages, **inline le CSS**, sous-ensemble la police |
+
+L'ordre compte : les pages injectent le CSS, donc `css` passe avant `pages`.
+La feuille est supprimée de `dist/` une fois inlinée — plus rien ne la sert.
+
+## Performance
+
+Mesuré sur la page d'accueil, Chromium headless en 1440×900, serveur local :
+
+| | Avant | Après |
+|---|---|---|
+| Requêtes | 16 | **13** |
+| Transféré | 340 Ko | **149 Ko** |
+| LCP | — | **~110 ms** |
+| CLS | 0 | **0** |
+| Domaines tiers | 2 (Google Fonts) | **0** |
+
+Ce qui a produit le gain :
+
+- **AVIF** en premier, WebP en repli, via `<picture>` — les 800×600 passent de ~60 Ko à ~20 Ko ;
+- **police auto-hébergée puis sous-ensemblée** : `tools/subset_font.py` ne garde que les
+  caractères réellement présents dans les pages générées, plus l'ASCII imprimable pour ce que
+  le visiteur tape dans le formulaire — 47,2 → 20,2 Ko, et deux domaines tiers en moins ;
+- **CSS inliné** dans chaque page : une requête bloquante supprimée, 6,7 Ko gzip absorbés par
+  une réponse HTML qui partait de toute façon ;
+- **JS minifié** et toujours en `defer` ;
+- `width`/`height` sur chaque image et `aspect-ratio` sur les tuiles : CLS à 0 ;
+- `preload` sur la police et sur l'image du hero en AVIF.
+
+> Ce sont des mesures locales, pas un score Lighthouse : l'outil n'est pas installé ici.
+> Lance `npx lighthouse` après déploiement pour le chiffre officiel.
+
+## Contenu et pénalités
+
+Trois vérifications tournent au build, et **le build échoue** si l'une casse :
+
+- toute image citée par une page existe dans `dist/img` ;
+- aucune meta description ne dépasse 160 caractères ;
+- le CSS a bien été produit avant les pages.
+
+Contre le contenu générique et dupliqué :
+
+- **titles, descriptions et canonical uniques** sur les 10 pages ;
+- chaque page service a **son propre bloc de fond** (six sections rédigées, spécifiques au
+  métier) et **son propre CTA** — auparavant les trois partageaient la même phrase ;
+- volume utile par page porté de 274–596 à **302–723 mots**, hors gabarit ;
+- les seules répétitions restantes sont les phrases de marque d'ACDC elles-mêmes, reprises
+  de leur propre communication, et le gabarit header/footer — ce que Google attend.
 
 Le dossier `dist/` est versionné : l'hébergeur n'a donc **aucune commande à exécuter**,
 et le build n'exige pas Python + Pillow sur la machine de déploiement.
 
-## Déploiement Vercel
+## Déploiement
+
+La maquette et le site réel sortent du même build, via deux variables.
+
+```bash
+npm run build                                   # maquette : noindex + bandeau de démo
+SITE_URL=https://acdcair.com.au DEMO=0 npm run build   # production
+```
+
+`DEMO=0` retire le bandeau de démonstration et bascule `robots` en
+`index, follow`, `robots.txt` en `Allow: /` avec le lien du sitemap, et réécrit
+les `canonical`, `og:url` et le sitemap sur `SITE_URL`. La page 404 reste
+`noindex` dans les deux cas.
 
 ```bash
 npx vercel --prod
