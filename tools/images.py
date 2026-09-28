@@ -58,6 +58,11 @@ def convert(path):
 
 
 def main():
+    # On repart d'un dossier propre : sans cela, les derives d'une photo retiree
+    # des sources restent servies et alourdissent le deploiement.
+    if OUT.is_dir():
+        for stale in OUT.iterdir():
+            stale.unlink()
     OUT.mkdir(parents=True, exist_ok=True)
     total_src = total_out = 0
     for path in sorted(SRC.iterdir()):

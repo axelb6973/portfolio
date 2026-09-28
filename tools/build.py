@@ -1111,7 +1111,14 @@ def page_contact():
 
 <section class="section">
   <div class="lane grid items-start gap-16 lg:grid-cols-2">
-    <dl class="contactinfo grid gap-6">{dl}</dl>
+    <div class="grid gap-12">
+      <dl class="contactinfo grid gap-6">{dl}</dl>
+      <figure class="overflow-hidden rounded" data-reveal data-delay="300">
+        {img("hero-acdc-van-perth",
+             "Rear of an ACDC Air Conditioning van showing the logo and phone number 0432 230 757",
+             [480, 720], "(min-width: 1024px) 50vw, 100vw", cls="w-full")}
+      </figure>
+    </div>
     <div class="overflow-hidden rounded bg-fog" data-reveal data-delay="150">
       <iframe title="ACDC Air Conditioning, 57A Boronia St, Innaloo WA"
               src="https://www.google.com/maps?q=57A%20Boronia%20St%2C%20Innaloo%20WA%206018&amp;hl=en&amp;z=14&amp;output=embed"
